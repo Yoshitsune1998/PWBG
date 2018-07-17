@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PWBG_BOT": {
+      "commandName": "Project",
+      "commandLineArgs": "-version"
+    }
+  }
+}

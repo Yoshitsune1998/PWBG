@@ -1,0 +1,11 @@
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\bin\Debug\netcoreapp2.0\PWBG_BOT.deps.json
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\bin\Debug\netcoreapp2.0\PWBG_BOT.runtimeconfig.json
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\bin\Debug\netcoreapp2.0\PWBG_BOT.runtimeconfig.dev.json
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\bin\Debug\netcoreapp2.0\PWBG_BOT.dll
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\bin\Debug\netcoreapp2.0\PWBG_BOT.pdb
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.csprojResolveAssemblyReference.cache
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.csproj.CoreCompileInputs.cache
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.AssemblyInfoInputs.cache
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.AssemblyInfo.cs
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.dll
+C:\Users\msi\source\repos\PWBG_BOT\PWBG_BOT\obj\Debug\netcoreapp2.0\PWBG_BOT.pdb
