@@ -44,7 +44,8 @@
 
 * For Requesting Hint [ONLY FOR PARTICIPANT] [ONLY WORK IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
 
->-hint number(1-3)
+>-hint
+
 
 <br>
 
@@ -124,7 +125,7 @@
 
 * For Adding Quizzes
 
-> -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item number")
+> -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc")
 
 * For Adding Items
 
