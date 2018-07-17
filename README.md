@@ -1,2 +1,3 @@
 # PWBG
-A discord bot project
+A discord bot project <br>
+Still in development
