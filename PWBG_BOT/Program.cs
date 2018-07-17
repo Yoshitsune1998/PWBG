@@ -6,8 +6,7 @@ namespace PWBG_BOT
     {
         private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            
+            Console.WriteLine(Utilities.GetText("Test2"));
         }
         
     }
