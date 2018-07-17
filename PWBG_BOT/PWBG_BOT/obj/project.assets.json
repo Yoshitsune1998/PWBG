@@ -670,11 +670,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\msi\\source\\repos\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT.csproj",
+      "projectUniqueName": "D:\\App Project\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT.csproj",
       "projectName": "PWBG_BOT",
-      "projectPath": "C:\\Users\\msi\\source\\repos\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT.csproj",
+      "projectPath": "D:\\App Project\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT.csproj",
       "packagesPath": "C:\\Users\\msi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\msi\\source\\repos\\PWBG_BOT\\PWBG_BOT\\obj\\",
+      "outputPath": "D:\\App Project\\PWBG_BOT\\PWBG_BOT\\PWBG_BOT\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
