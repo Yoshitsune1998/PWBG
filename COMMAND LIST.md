@@ -8,6 +8,10 @@
 
 > FOR OTHER COMMANDS WILL BE ADDED SOON
 
+> NO EDITING FROM DATABASE PROHIBITED
+
+> IF YOU WANT TO CHANGE QUIZ OR SOMETHING JUST DROP IT WITH THE COMMAND AND ADD IT AGAIN WITH DIFFERENT DATA
+
 <br>
 
 ## **STARTER PACK COMMAND**
@@ -26,9 +30,13 @@
 
 ## **QUIZ COMMAND**
 
-* For Showing The Quiz [ONLY FOR QUIZ MANAGER]
+* For Showing The Quiz [ONLY FOR QUIZ MANAGER] [ONLY WORK IF THERE IS NO QUIZ HAS BEEN STARTED]
 
 > -quiz number(1-10^5)
+
+* For Canceling The Quiz [ONLY FOR QUIZ MANAGER] [ONLY WORK IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT] 
+
+> -quiz cancel
 
 * For Answering The Quiz [ONLY FOR PARTICIPANT] [CAN BE ANSWERED IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
 
@@ -60,7 +68,55 @@
 
 * For dropping item from inventory
 
-> -drop item number[1-3]
+> -inv drop number[1-3]
+
+<br>
+
+## **DATABASES COMMAND**
+
+* For Showing All Players
+
+> -show players
+
+* For Showing Player with name or number
+
+> -show player name
+
+> -show player number(1-10^5)
+
+* For Showing Quizes
+
+> -show quizes
+
+* For Showing Quizes with specific word or value
+
+> -show quiz number(1-10^5)
+
+> -show quiz type("image / sv / ost / others")
+
+> -show quiz diff("ez / med / hard / ext / imm")
+
+> -show quiz drop("item number")
+
+> -show quiz + combination of all above
+
+* For Showing Listed Items
+
+> -show items
+
+* For Showing Listed Items with specific word or value
+
+> -show item number(1-10^5)
+
+> -show item type("target / self / pass")
+
+> -show item active(true/false)
+
+> -show item value("like ammount of damage or heal")
+
+> -show item rarity("comm / uncomm / etc")
+
+> -show item + combination of all above
 
 <br>
 
@@ -68,15 +124,13 @@
 
 * For Adding Quizzes
 
-> -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item id")
+> -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item number")
 
 * For Adding Items
 
-> -add item number(1-10^5) type("target / self / pass") active(true/false) value("like ammount of damage") rarity("comm / uncomm / etc")
+> -add item number(1-10^5) type("target / self / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
 
 > *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
-
->  -add item number(1-10^5) type("---") active(true/false)  rarity("comm / uncomm / etc")
 
 * For Adding Player via Admin
 
