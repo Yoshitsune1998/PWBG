@@ -73,7 +73,7 @@
 
 <br>
 
-## **DATABASES COMMAND**
+## **DATABASES COMMAND** [ONLY ADMIN AND QUIZ MANAGER]
 
 * For Showing All Players
 
