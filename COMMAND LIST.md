@@ -125,7 +125,7 @@
 
 * For Adding Quizzes
 
-> -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc")
+> -add quiz number(1-10^5) type("image / sv / ost / others") file("embedded location like imgur / etc") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc")
 
 * For Adding Items
 
