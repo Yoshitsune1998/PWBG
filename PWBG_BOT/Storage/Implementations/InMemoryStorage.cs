@@ -5,6 +5,11 @@ namespace PWBG_BOT.Storage.Implementations
     public class InMemoryStorage : IDataStore
     {
 
+        public InMemoryStorage()
+        {
+            Console.WriteLine("IMS Constructed!.");
+        }
+
         private readonly Dictionary<string, object> _dictio = new Dictionary<string, object>();
 
         public void StoreQuiz(object obj, string key)

@@ -6,9 +6,10 @@ namespace PWBG_BOT
     {
         private static void Main(string[] args)
         {
-            Unity.RegisterTypes();
             Console.WriteLine("Hello World!");
+            
         }
+        
     }
 
 }

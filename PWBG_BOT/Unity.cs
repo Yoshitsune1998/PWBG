@@ -1,5 +1,6 @@
 ﻿using Unity;
 using Unity.Resolution;
+using Unity.Lifetime;
 using PWBG_BOT.Storage;
 using PWBG_BOT.Storage.Implementations;
 namespace PWBG_BOT
@@ -22,7 +23,7 @@ namespace PWBG_BOT
         public static void RegisterTypes()
         {
             _cont = new UnityContainer();
-            _cont.RegisterType<IDataStore, InMemoryStorage>();
+            _cont.RegisterType<IDataStore, InMemoryStorage>(new ContainerControlledLifetimeManager());
         }
 
         public static T Resolve<T>()
