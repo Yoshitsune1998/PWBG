@@ -135,7 +135,7 @@
 
 * For Adding Player via Admin
 
-> -add player number(1-10^5) name
+> -add player number(1-10^5) name discordID
 
 <br>
 

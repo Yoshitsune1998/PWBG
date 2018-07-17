@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace PWBG_BOT
 {
@@ -7,13 +6,9 @@ namespace PWBG_BOT
     {
         private static void Main(string[] args)
         {
-
-            if (args.Any() && args.First() == "-version")
-            {
-                Console.WriteLine("Version 0.0.1");
-                return;
-            }
+            Unity.RegisterTypes();
             Console.WriteLine("Hello World!");
         }
     }
+
 }
