@@ -1,11 +1,14 @@
 # COMMAND LIST
 
+<br>
+
 ## **IMPORTANT NOTES**
 
 > THE COMMAND CAN BE CHANGED IN TIME BE SURE TO CHECK THIS OUT
 
 > FOR OTHER COMMANDS WILL BE ADDED SOON
 
+<br>
 
 ## **STARTER PACK COMMAND**
 
@@ -18,6 +21,8 @@
 > -out
 
 > *NB : IF YOU GO OUT FROM QUIZ WHEN IT HAS BEEN STARTED YOU CANT JOIN BACK BEFORE THE QUIZ FINISHED 
+
+<br>
 
 ## **QUIZ COMMAND**
 
@@ -32,6 +37,8 @@
 * For Requesting Hint [ONLY FOR PARTICIPANT] [CAN BE ANSWERED IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
 
 >-hint number(1-3)
+
+<br>
 
 ## **USING ITEM COMMAND** [ONLY FOR PARTICIPANT]
 
@@ -55,7 +62,7 @@
 
 > -drop item number[1-3]
 
-
+<br>
 
 ## **ADDING COMMAND** [ONLY ADMIN AND QUIZ MANAGER]
 
@@ -63,15 +70,19 @@
 
 > -add quiz number(1-10^5) type("image / sv / ost / others") diff("ez / med / hard / ext / imm") drop("item id")
 
-* For Adding Items (Still one work)
+* For Adding Items
 
-> -add item number(1-10^5) type("---") active(true/false) value("like ammount of damage") rarity("comm / uncomm / etc")
+> -add item number(1-10^5) type("target / self / pass") active(true/false) value("like ammount of damage") rarity("comm / uncomm / etc")
+
+> *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
 
 >  -add item number(1-10^5) type("---") active(true/false)  rarity("comm / uncomm / etc")
 
 * For Adding Player via Admin
 
 > -add player number(1-10^5) name
+
+<br>
 
 ## **DROPPING COMMAND** [ONLY ADMIN AND QUIZ MANAGER]
 
@@ -94,11 +105,11 @@
 > -drop item name
 
 
-
 * For Dropping Quiz From Quiz database
 
 > -drop quiz number(1-10^5)
 
+<br>
 
 ## **MEME COMMAND** [STILL ON WORK]
 
