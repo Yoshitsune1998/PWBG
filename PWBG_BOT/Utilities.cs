@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
+using System;
 
 namespace PWBG_BOT
 {
@@ -20,5 +21,20 @@ namespace PWBG_BOT
             if (_dictionary.ContainsKey(key)) return _dictionary[key];
             return "";
         }
+
+        public static string GetFormattedText(string key, object param)
+        {
+            return String.Format(_dictionary[key], new object[] { param });
+        }
+
+        public static string GetFormattedText(string key, params object[] param)
+        {
+            if (_dictionary.ContainsKey(key))
+            {
+                return String.Format(_dictionary[key], param);
+            }
+            return "";
+        }
+
     }
 }
