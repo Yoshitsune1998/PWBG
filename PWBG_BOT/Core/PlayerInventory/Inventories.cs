@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Discord.WebSocket;
 using PWBG_BOT.Core.Items;
 
 namespace PWBG_BOT.Core.PlayerInventory
@@ -24,10 +25,15 @@ namespace PWBG_BOT.Core.PlayerInventory
             }
         }
 
-        public static Item GetItems(ulong id)
+        public static Item GetItems(SocketUser user,uint slot)
         {
-            var savedInvent = GetOrCreateInventory(id);
+            var savedInv = GetInventory(user);
+            return savedInv.Items[(int)slot];
+        }
 
+        public static Inventory GetInventory(SocketUser user)
+        {
+            return GetOrCreateInventory(user.Id);
         }
 
         public static Inventory GetOrCreateInventory(ulong id)
@@ -45,7 +51,7 @@ namespace PWBG_BOT.Core.PlayerInventory
             var newInvent = new Inventory()
             {
                 IDInvent = id,
-                Items = new List<Items.Item>()
+                Items = new List<Item>()
             };
             invs.Add(newInvent);
             SaveInvent();

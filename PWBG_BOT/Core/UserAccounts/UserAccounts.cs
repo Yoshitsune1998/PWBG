@@ -57,7 +57,7 @@ namespace PWBG_BOT.Core.UserAccounts
         {
             var newAccount = new UserAccount()
             {
-                ID = id,
+                ID = id,    
                 Points = 0,
                 Buffs = new List<Buff>(),
                 Debuffs = new List<Debuff>(),

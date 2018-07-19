@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using PWBG_BOT.Core.Items;
+using PWBG_BOT.Core.PlayerInventory;
 
 namespace PWBG_BOT.Core.System
 {
@@ -8,53 +11,69 @@ namespace PWBG_BOT.Core.System
     {
         private static List<Quiz> quizzes;
 
-        private static string quizzesFile = "Resources/quizzes.json";
+        private static string QuizzesFile = "Resources/quizzes.json";
 
-        //static Quizzes()
-        //{
-        //    if (DataStorage.SaveExist(quizzesFile))
-        //    {
-        //        quizzes = DataStorage.LoadUserAccounts(quizzesFile).ToList();
-        //    }
-        //    else
-        //    {
-        //        quizzes = new List<Quiz>();
-        //        SaveAccount();
-        //    }
-        //}
+        static Quizzes()
+        {
+            if (DataStorage.SaveExist(QuizzesFile))
+            {
+                quizzes = DataStorage.LoadQuiz(QuizzesFile).ToList();
+            }
+            else
+            {
+                quizzes = new List<Quiz>();
+                SaveQuizzes();
+            }
+        }
 
-        //public static Quiz GetQuiz(SocketUser user)
-        //{
-        //    return GetOrCreateAccount(user.Id);
-        //}
+        public static Quiz GetQuiz(ulong id)
+        {
+            var result = from q in quizzes
+                         where q.ID == id
+                         select q;
+            var quiz = result.FirstOrDefault();
+            return quiz;
+        }
 
-        //public static void SaveAccount()
-        //{
-        //    DataStorage.SaveUserAccounts(accounts, accountsFile);
-        //}
+        public static List<Quiz> GetQuizzes()
+        {
+            return quizzes;
+        }
 
-        //public static Quiz GetOrCreateAccount(ulong id)
-        //{
-        //    var result = from a in accounts
-        //                 where a.ID == id
-        //                 select a;
-        //    var account = result.FirstOrDefault();
-        //    if (account == null) account = CreateUserAccount(id);
-        //    return account;
-        //}
+        public static void SaveQuizzes()
+        {
+            DataStorage.SaveQuizzes(quizzes, QuizzesFile);
+        }
 
-        //private static Quiz CreateUserAccount(ulong id)
-        //{
-        //    var newAccount = new UserAccount()
-        //    {
-        //        ID = id,
-        //        Points = 10,
-        //        XP = 0
-        //    };
-        //    accounts.Add(newAccount);
-        //    SaveAccount();
-        //    return newAccount;
-        //}
+        private static Quiz CreatingQuiz(string type, string imageUrl,string diff, string dropName, string correct, string[] hints)
+        {
+            ulong stId = MainStorage.GetValueOf("LatestQuizId");
+            ulong Id = (ulong)Convert.ToInt32(stId) + 1;
+            var result = from i in quizzes
+                         where i.ID == Id
+                         select i;
+            var quiz = result.FirstOrDefault();
+            if (quiz == null) quiz = CreateQuiz(Id, type, imageUrl, diff, dropName, correct, hints);
+            return quiz;
+        }
+
+        private static Quiz CreateQuiz(ulong id, string type, string imageUrl, string diff, string dropName, string correct, string[] hints)
+        {
+            var newQuiz = new Quiz()
+            {
+                ID = id,
+                Type = type,
+                Difficulty = diff,
+                Drop = Drops.PackageOfItem(dropName),
+                ImageURL = imageUrl,
+                RightAnswer = correct,
+                Hints = hints.OfType<string>().ToList()
+             };
+            quizzes.Add(newQuiz);
+            MainStorage.ChangeData("LatestQuizId", id);
+            SaveQuizzes();
+            return newQuiz;
+        }
 
     }
 }

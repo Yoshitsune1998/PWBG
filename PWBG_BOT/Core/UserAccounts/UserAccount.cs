@@ -7,7 +7,6 @@ namespace PWBG_BOT.Core.UserAccounts
     public class UserAccount
     {
         public ulong ID { get; set; }
-        public string name { get; set; }
         public uint HP { get; set; }
         public Inventory Inventory { get; set; }
         public uint Points { get; set; }

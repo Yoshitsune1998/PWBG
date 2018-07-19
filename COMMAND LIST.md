@@ -26,6 +26,10 @@
 
 > *NB : IF YOU GO OUT FROM QUIZ WHEN IT HAS BEEN STARTED YOU CANT JOIN BACK BEFORE THE QUIZ FINISHED 
 
+* For Showing Profile
+
+> -stats
+    
 <br>
 
 ## **QUIZ COMMAND**
@@ -109,6 +113,8 @@
 
 > -show item number(1-10^5)
 
+> -show item name("item name")
+
 > -show item type("target / self / pass")
 
 > -show item active(true/false)
@@ -125,11 +131,11 @@
 
 * For Adding Quizzes
 
-> -add quiz number(1-10^5) type("image / sv / ost / others") file("embedded location like imgur / etc") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc")
+> -add quiz type("image / sv / ost / others") file("embedded location like imgur / etc") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc") correctAnswer("the correct answer from your quiz")
 
 * For Adding Items
 
-> -add item number(1-10^5) type("target / self / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
+> -add item name("item name) type("target / self / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
 
 > *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
 

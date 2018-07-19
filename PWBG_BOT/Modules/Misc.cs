@@ -27,7 +27,7 @@ namespace PWBG_BOT.Modules
         [Command("quiz")]
         public async Task StartQuiz(int number)
         {
-
+            await Context.Channel.SendMessageAsync("QUIZ STARTED");
         }
         [Command("quiz cancel")]
         public async Task QuizManage()
@@ -36,16 +36,47 @@ namespace PWBG_BOT.Modules
         }
 
         [Command("stats")]
-        public async Task Stats([Remainder]string args = "")
+        public async Task Stats()
         {
-            SocketUser user = null;
-            var mentionUser = Context.Message.MentionedUsers.FirstOrDefault();
-
-            user = mentionUser ?? Context.User;
-
+            var user = Context.User;
             var account = UserAccounts.GetUserAccount(user);
 
-            //await Context.Channel.SendMessageAsync($"{user.Mention} you have {account.XP} XP and {account.Points} Points");
+            embed = new EmbedBuilder();
+            embed.WithTitle(Context.User.Username + "'s Profile");
+            embed.WithThumbnailUrl(user.GetAvatarUrl());
+            embed.AddInlineField("HP : " , account.HP);
+            embed.AddInlineField("Points : ", account.Points);
+            embed.AddInlineField("Kills : ", account.Kills);
+            int lenght = account.Inventory.Items.Count;
+            int temp = 0;
+            for (int i = 0; i < lenght; i++)
+            {
+                embed.AddInlineField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
+                temp++;
+            }
+            for (int i = temp; i < 3-lenght; i++)
+            {
+                embed.AddInlineField($"Items-{i+1} : ", "---");
+            }
+            embed.WithColor(0,0,255);
+
+            await Context.Channel.SendMessageAsync("", embed: embed);
+
+        }
+
+        [Command("truth")]
+        public async Task FindingTruth(bool x)
+        {
+            Console.WriteLine(x);
+            if (x)
+            {
+                await Context.Channel.SendMessageAsync("LU GAY");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("TETEP GAY");
+            }
+            
         }
 
         [Command("mention")]
@@ -75,8 +106,11 @@ namespace PWBG_BOT.Modules
         [Command("load")]
         public async Task Load()
         {
-            await Context.Channel.SendMessageAsync("Data has "+DataStorage.GetPairsCount() + " pairs");
-            DataStorage.SavePairs("Count "+ DataStorage.GetPairsCount(), "Counter " + DataStorage.GetPairsCount());
+            await Context.Channel.SendMessageAsync("Data has " + MainStorage.GetPairsCount() + " pairs");
+            foreach (var data in MainStorage.LoadPairs())
+            {
+                await Context.Channel.SendMessageAsync($"{data.Key} : {data.Value}");
+            }
         }
 
         [Command("pm")]
@@ -90,7 +124,7 @@ namespace PWBG_BOT.Modules
         public async Task MyProfile()
         {
             var account = UserAccounts.GetUserAccount(Context.User);
-            //embed = embedBuilder("XP : "+account.XP+"\nPoints : "+account.Points);
+            embed = embedBuilder("HP : " + account.HP + "\nKills "+account.Kills+"\nPoints : " + account.Points);
             embed.WithTitle(Context.User.Username + "'s Profile");
 
             await Context.Channel.SendMessageAsync("", embed: embed);

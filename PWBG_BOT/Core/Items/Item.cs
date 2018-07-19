@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PWBG_BOT.Core.BuffAndDebuff;
 
 namespace PWBG_BOT.Core.Items
 {
@@ -10,9 +11,9 @@ namespace PWBG_BOT.Core.Items
         public string Name { get; set; }
         public string Type { get; set; }
         public bool Active { get; set; }
-        public uint value { get; set; }
+        public uint Value { get; set; }
         public string Rarity { get; set; }
-        public bool GiveBuffs { get; set; }
-        public bool GiveDebuffs { get; set; }
+        public Buff buffs { get; set; }
+        public Debuff debuffs { get; set; }
     }
 }
