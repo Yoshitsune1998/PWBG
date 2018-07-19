@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Discord.WebSocket;
 using System.Linq;
+using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.BuffAndDebuff;
 
 namespace PWBG_BOT.Core.UserAccounts
 {
@@ -31,6 +33,11 @@ namespace PWBG_BOT.Core.UserAccounts
             return GetOrCreateAccount(user.Id);
         }
 
+        public static Inventory GetInventory(SocketUser user)
+        {
+            return Inventories.GetOrCreateInventory(user.Id);
+        }
+
         public static void SaveAccount()
         {
             DataStorage.SaveUserAccounts(accounts, accountsFile);
@@ -51,7 +58,13 @@ namespace PWBG_BOT.Core.UserAccounts
             var newAccount = new UserAccount()
             {
                 ID = id,
-                Points = 10
+                Points = 0,
+                Buffs = new List<Buff>(),
+                Debuffs = new List<Debuff>(),
+                HP = 15,
+                Inventory = Inventories.GetOrCreateInventory(id),
+                Kills = 0,
+
             };
             accounts.Add(newAccount);
             SaveAccount();

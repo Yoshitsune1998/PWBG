@@ -21,7 +21,7 @@ namespace PWBG_BOT.Core
                 AutoReset = true,
                 Enabled = true
             };
-            loopTimer.Elapsed += OnTimerTicked;
+            //loopTimer.Elapsed += OnTimerTicked;
 
 
             return Task.CompletedTask;

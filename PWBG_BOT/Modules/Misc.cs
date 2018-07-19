@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using PWBG_BOT.Core.System;
 using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Modules;
 using NReco.ImageGenerator;
@@ -23,7 +24,16 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync(Utilities.GetText("Test"));
         }
         
+        [Command("quiz")]
+        public async Task StartQuiz(int number)
+        {
 
+        }
+        [Command("quiz cancel")]
+        public async Task QuizManage()
+        {
+            await Context.Channel.SendMessageAsync("QUIZ CANCELED");
+        }
 
         [Command("stats")]
         public async Task Stats([Remainder]string args = "")
@@ -35,7 +45,7 @@ namespace PWBG_BOT.Modules
 
             var account = UserAccounts.GetUserAccount(user);
 
-            await Context.Channel.SendMessageAsync($"{user.Mention} you have {account.XP} XP and {account.Points} Points");
+            //await Context.Channel.SendMessageAsync($"{user.Mention} you have {account.XP} XP and {account.Points} Points");
         }
 
         [Command("mention")]
@@ -80,7 +90,7 @@ namespace PWBG_BOT.Modules
         public async Task MyProfile()
         {
             var account = UserAccounts.GetUserAccount(Context.User);
-            embed = embedBuilder("XP : "+account.XP+"\nPoints : "+account.Points);
+            //embed = embedBuilder("XP : "+account.XP+"\nPoints : "+account.Points);
             embed.WithTitle(Context.User.Username + "'s Profile");
 
             await Context.Channel.SendMessageAsync("", embed: embed);

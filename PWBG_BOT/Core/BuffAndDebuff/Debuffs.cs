@@ -4,7 +4,8 @@ using System.Text;
 
 namespace PWBG_BOT.Core.BuffAndDebuff
 {
-    public class Debuffs
+    public static class Debuffs
     {
+        
     }
 }

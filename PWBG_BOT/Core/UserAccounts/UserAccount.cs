@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using PWBG_BOT.Core.BuffAndDebuff;
+using PWBG_BOT.Core.PlayerInventory;
 
 namespace PWBG_BOT.Core.UserAccounts
 {
@@ -8,11 +8,11 @@ namespace PWBG_BOT.Core.UserAccounts
     {
         public ulong ID { get; set; }
         public string name { get; set; }
-        public ulong IDInvent { get; set; }
         public uint HP { get; set; }
+        public Inventory Inventory { get; set; }
         public uint Points { get; set; }
-        public uint Kilss { get; set; }
-
-
+        public uint Kills { get; set; }
+        public List<Buff> Buffs { get; set; }
+        public List<Debuff> Debuffs { get; set; }
     }
 }
