@@ -3,5 +3,7 @@
     "Test2":"Another World",
     "Welcome_&NAME_&BOTNAME":"Hello {0}. Are you ready to tofu dinner tonight???. I am PWBG-Bot here to help you achieve that ",
     "Welcome_&NAME":"Hello {0}. Are you ready to tofu dinner tonight???.",
-    "Say_&NAME":"Message By {0}"
-}
+    "Say_&NAME":"Message By {0}",
+    "Reveal":"The Secret is `MAMANX`",
+    "pm":"Hai Sayang"
+}   

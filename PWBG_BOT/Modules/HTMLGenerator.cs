@@ -5,9 +5,9 @@ using System.IO;
 
 namespace PWBG_BOT.Modules
 {
-    public class HTMLGenerator
+    public static class HTMLGenerator
     {
-        private string GetHtmlCode(string searchimage)
+        private static string GetHtmlCode(string searchimage)
         {
             var rnd = new Random();
 
@@ -31,7 +31,7 @@ namespace PWBG_BOT.Modules
             }
             return data;
         }
-        private List<string> GetUrls(string html)
+        private static List<string> GetUrls(string html)
         {
             var urls = new List<string>();
 
@@ -48,7 +48,7 @@ namespace PWBG_BOT.Modules
             }
             return urls;
         }
-        public string GetImageUrl(string opt)
+        public static string GetImageUrl(string opt)
         {
             string html = GetHtmlCode(opt);
             List<string> urls = GetUrls(html);
