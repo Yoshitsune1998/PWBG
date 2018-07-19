@@ -1,10 +1,3 @@
-<style>
-td{
-    text-align:center;
-}
-</style>
-
-<!-- CHANGE BELOW THIS ONLY -->
 
 <h1>ITEM LIST</h1>
 
