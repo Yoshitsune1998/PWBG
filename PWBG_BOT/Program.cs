@@ -2,12 +2,12 @@
 using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using PWBG_BOT.Core;
 
 namespace PWBG_BOT
 {
     internal class Program
     {
-
         DiscordSocketClient _client;
         CommandHandler _handler;
 
@@ -23,8 +23,10 @@ namespace PWBG_BOT
             }
             );
             _client.Log += _client_Log;
+            _client.Ready += ReapetedTimer.StartTimer;
             await _client.LoginAsync(TokenType.Bot, Config.bot.token);
             await _client.StartAsync();
+            GlobalVar.Client = _client;
             _handler = new CommandHandler();
             await _handler.InitializeAsync(_client);
             await Task.Delay(-1);
@@ -35,8 +37,6 @@ namespace PWBG_BOT
             Console.WriteLine(logMessage.Message);
             return Task.CompletedTask;
         }
-
-
         
     }
 

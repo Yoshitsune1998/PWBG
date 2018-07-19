@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Discord;
 using Discord.Commands;
@@ -6,6 +7,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Modules;
+using NReco.ImageGenerator;
 
 namespace PWBG_BOT.Modules
 {
@@ -20,6 +22,29 @@ namespace PWBG_BOT.Modules
         {
             await Context.Channel.SendMessageAsync(Utilities.GetText("Test"));
         }
+        
+
+
+        [Command("stats")]
+        public async Task Stats([Remainder]string args = "")
+        {
+            SocketUser user = null;
+            var mentionUser = Context.Message.MentionedUsers.FirstOrDefault();
+
+            user = mentionUser ?? Context.User;
+
+            var account = UserAccounts.GetUserAccount(user);
+
+            await Context.Channel.SendMessageAsync($"{user.Mention} you have {account.XP} XP and {account.Points} Points");
+        }
+
+        [Command("mention")]
+        public async Task Mention(IGuildUser user)
+        {
+            var us = (SocketUser)user;
+            var account = UserAccounts.GetUserAccount((SocketUser)user);
+            await Context.Channel.SendMessageAsync($"{us.Mention} with id {account.ID} mentioned by {Context.User.Mention}");
+        }
         [Command("say")]
         public async Task Say([Remainder]string text)
         {
@@ -33,7 +58,7 @@ namespace PWBG_BOT.Modules
         [Command("secret")]
         public async Task Secret()
         {
-            if (!isQuizManager((SocketGuildUser)Context.User)) return;
+            if (!isHaveThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
                 await Context.Channel.SendMessageAsync(Utilities.GetText("Reveal"));
         }
 
@@ -58,8 +83,21 @@ namespace PWBG_BOT.Modules
             embed = embedBuilder("XP : "+account.XP+"\nPoints : "+account.Points);
             embed.WithTitle(Context.User.Username + "'s Profile");
 
-            await Context.Channel.SendMessageAsync("", false, embed);
+            await Context.Channel.SendMessageAsync("", embed: embed);
         }
+
+        //[Command("sendnudes")]
+        //public async Task SendNudes([Remainder]string args = "")
+        //{
+        //    string html = "<style>\n    h1{\n        color: red;\n    }\n</style>\n<h1>Hello Wordl!</h1>";
+        //    var converter = new HtmlToImageConverter
+        //    {
+        //        Width = 200,
+        //        Height = 70
+        //    };
+        //    var jpgBytes = converter.GenerateImage(html,NReco.ImageGenerator.ImageFormat.Jpeg);
+        //    await Context.Channel.SendFileAsync(new MemoryStream(jpgBytes), "hello.jpg");
+        //}
 
         //[Command("waifu")]
         //public async Task Waifu([Remainder]string text)
@@ -72,14 +110,19 @@ namespace PWBG_BOT.Modules
         //    string url = HTMLGenerator.GetImageUrl(opt);
         //    embed.WithThumbnailUrl(url);
 
-        //    await Context.Channel.SendMessageAsync("", false, embed);
+        //    await Context.Channel.SendMessageAsync("", embed: embed);
         //}
 
-        private bool isQuizManager(SocketGuildUser user)
+             /*
+              
+             END OF LINE
+             
+             */
+
+        private bool isHaveThisRole(SocketGuildUser user, string role)
         {
-            string RoleName = "Quiz Manager";
             var res = from r in user.Guild.Roles
-                      where r.Name == RoleName
+                      where r.Name == role
                       select r.Id;
             ulong roleId = res.FirstOrDefault();
             if (roleId == 0) return false;

@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NReco.ImageGenerator" Version="1.1.1" />
     <PackageReference Include="Unity" Version="5.8.6" />
   </ItemGroup>
 

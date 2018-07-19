@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Discord.WebSocket;
-using System.Linq;
+using System.Text;
 
-namespace PWBG_BOT.Core.UserAccounts
+namespace PWBG_BOT.Core.System
 {
-    public static class UserAccounts
+    public static class Quizzes
     {
-        //DONT FORGET TO SAVE FILE BY USING UserAccounts.SaveAccount(); AFTER ADDING EXP OR SOMETHING OTHERWISE ITS NOT GONNA BE CHANGED
-
-        private static List<UserAccount> accounts;
+        private static List<Quiz> quizzes;
 
         private static string accountsFile = "Resources/accounts.json";
 
-        static UserAccounts()
+        static Quizzes()
         {
             if (DataStorage.SaveExist(accountsFile))
             {
@@ -26,7 +23,7 @@ namespace PWBG_BOT.Core.UserAccounts
             }
         }
 
-        public static UserAccount GetUserAccount(SocketUser user)
+        public static Quiz GetQuiz(SocketUser user)
         {
             return GetOrCreateAccount(user.Id);
         }
@@ -36,7 +33,7 @@ namespace PWBG_BOT.Core.UserAccounts
             DataStorage.SaveUserAccounts(accounts, accountsFile);
         }
 
-        public static UserAccount GetOrCreateAccount(ulong id)
+        public static Quiz GetOrCreateAccount(ulong id)
         {
             var result = from a in accounts
                          where a.ID == id
@@ -46,17 +43,17 @@ namespace PWBG_BOT.Core.UserAccounts
             return account;
         }
 
-        private static UserAccount CreateUserAccount(ulong id)
+        private static Quiz CreateUserAccount(ulong id)
         {
             var newAccount = new UserAccount()
             {
                 ID = id,
-                Points = 10
+                Points = 10,
+                XP = 0
             };
             accounts.Add(newAccount);
             SaveAccount();
             return newAccount;
         }
-
     }
 }
