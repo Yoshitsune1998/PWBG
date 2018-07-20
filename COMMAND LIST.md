@@ -44,7 +44,7 @@
 
 * For Answering The Quiz [ONLY FOR PARTICIPANT] [ONLY WORK IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
 
-> -ans text  
+> -q text
 
 * For Requesting Hint [ONLY FOR PARTICIPANT] [ONLY WORK IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
 
@@ -131,7 +131,11 @@
 
 * For Adding Quizzes
 
-> -add quiz type("image / sv / ost / others") file("embedded location like imgur / etc") diff("ez / med / hard / ext / imm") drop("item number") hint("detailed image / some useful text / etc") correctAnswer("the correct answer from your quiz")
+> -add quiz type("image / sv / ost / bonus / voice-sv") file("embedded location like imgur / etc") diff("ez / med / hard / ext / imm") drop("item number") correctAnswer("the correct answer from your quiz") [Hint added in different command]
+
+* For Adding Hints
+
+> -add hint quiznumber("number of quiz that you wanted to insert hint") hints("split with space")[Hint must be 3]
 
 * For Adding Items
 

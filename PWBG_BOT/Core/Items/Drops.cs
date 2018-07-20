@@ -39,10 +39,26 @@ namespace PWBG_BOT.Core.Items
             return item;
         }
 
+        public static Item GetSpecificItem(ulong id)
+        {
+            var result = from i in items
+                         where i.ID == id
+                         select i;
+            var item = result.FirstOrDefault();
+            return item;
+        }
+
         public static List<Item> PackageOfItem(string name)
         {
             List<Item> newInvent = new List<Item>();
             newInvent.Add(GetSpecificItem(name));
+            return newInvent;
+        }
+
+        public static List<Item> PackageOfItem(ulong id)
+        {
+            List<Item> newInvent = new List<Item>();
+            newInvent.Add(GetSpecificItem(id));
             return newInvent;
         }
 
@@ -51,7 +67,7 @@ namespace PWBG_BOT.Core.Items
             DataStorage.SaveItems(items, ItemsFile);
         }
 
-        private static Item CreatingItem(string name, string type, bool active, uint value, string rarity, 
+        public static Item CreatingItem(string name, string type, bool active, uint value, string rarity, 
             string buffname= "", string debuffname="")
         {
             ulong stId = MainStorage.GetValueOf("LatestItemId");

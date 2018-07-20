@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.PlayerInventory;
@@ -10,6 +10,7 @@ namespace PWBG_BOT.Core.System
     public static class Quizzes
     {
         private static List<Quiz> quizzes;
+        private static List<string> usedWords;
 
         private static string QuizzesFile = "Resources/quizzes.json";
 
@@ -45,7 +46,60 @@ namespace PWBG_BOT.Core.System
             DataStorage.SaveQuizzes(quizzes, QuizzesFile);
         }
 
-        private static Quiz CreatingQuiz(string type, string imageUrl,string diff, string dropName, string correct, string[] hints)
+        private static uint CorrectAnswer(string word, Quiz quiz)
+        {
+            string[] words = word.Split();
+            uint correctWord = 0;
+            string[] corrections = quiz.RightAnswer.Split();
+            foreach (var w in words)
+            {
+                foreach (var c in corrections)
+                {
+                    if (w.ToLower().Equals(c.ToLower()))
+                    {
+                        usedWords.Add(w);
+                        correctWord++;
+                    }
+                }
+            }
+            return correctWord;
+        }
+
+        private static bool CheckExistedAnswer(string word)
+        {
+            word = word.ToLower();
+            if (usedWords.Contains(word))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static uint CountingPoints(uint correct, uint despacito)
+        {
+            return (uint)10 * despacito / correct;
+        }
+
+        public static uint CheckAnswer(string word, ulong idQuiz)
+        {
+            Quiz now = GetQuiz(idQuiz);
+            if (now == null)
+            {
+                return 0;
+            }
+            if (!CheckExistedAnswer(word))
+            {
+                return 0;
+            }
+            uint numberCorrect = CorrectAnswer(word,now);
+            if (numberCorrect==0)
+            {
+                return 0;
+            }
+            return CountingPoints(numberCorrect, now.WordContainInCorrectAnswer);
+        }
+
+        public static Quiz CreatingQuiz(string type, string imageUrl,string diff, ulong dropId, string correct)
         {
             ulong stId = MainStorage.GetValueOf("LatestQuizId");
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
@@ -53,21 +107,20 @@ namespace PWBG_BOT.Core.System
                          where i.ID == Id
                          select i;
             var quiz = result.FirstOrDefault();
-            if (quiz == null) quiz = CreateQuiz(Id, type, imageUrl, diff, dropName, correct, hints);
+            if (quiz == null) quiz = CreateQuiz(Id, type, imageUrl, diff, dropId, correct);
             return quiz;
         }
 
-        private static Quiz CreateQuiz(ulong id, string type, string imageUrl, string diff, string dropName, string correct, string[] hints)
+        private static Quiz CreateQuiz(ulong id, string type, string imageUrl, string diff, ulong dropId, string correct)
         {
             var newQuiz = new Quiz()
             {
                 ID = id,
                 Type = type,
                 Difficulty = diff,
-                Drop = Drops.PackageOfItem(dropName),
-                ImageURL = imageUrl,
+                Drop = Drops.PackageOfItem(dropId),
+                URL = imageUrl,
                 RightAnswer = correct,
-                Hints = hints.OfType<string>().ToList()
              };
             quizzes.Add(newQuiz);
             MainStorage.ChangeData("LatestQuizId", id);

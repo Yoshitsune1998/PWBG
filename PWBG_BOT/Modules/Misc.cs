@@ -1,13 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.System;
+using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.UserAccounts;
-using PWBG_BOT.Modules;
 using NReco.ImageGenerator;
 
 namespace PWBG_BOT.Modules
@@ -16,24 +16,7 @@ namespace PWBG_BOT.Modules
     {
         private EmbedBuilder embed;
         
-        //Command Lines
-
-        [Command("test")]
-        public async Task Test()
-        {
-            await Context.Channel.SendMessageAsync(Utilities.GetText("Test"));
-        }
-        
-        [Command("quiz")]
-        public async Task StartQuiz(int number)
-        {
-            await Context.Channel.SendMessageAsync("QUIZ STARTED");
-        }
-        [Command("quiz cancel")]
-        public async Task QuizManage()
-        {
-            await Context.Channel.SendMessageAsync("QUIZ CANCELED");
-        }
+        /* STARTER PACK COMMAND */
 
         [Command("stats")]
         public async Task Stats()
@@ -43,26 +26,146 @@ namespace PWBG_BOT.Modules
 
             embed = new EmbedBuilder();
             embed.WithTitle(Context.User.Username + "'s Profile");
+            embed.WithColor(0, 0, 255);
             embed.WithThumbnailUrl(user.GetAvatarUrl());
             embed.AddInlineField("HP : " , account.HP);
             embed.AddInlineField("Points : ", account.Points);
             embed.AddInlineField("Kills : ", account.Kills);
             int lenght = account.Inventory.Items.Count;
             int temp = 0;
+            embed.AddField("Inventory : ", "Items List(1-3) : ");
             for (int i = 0; i < lenght; i++)
             {
-                embed.AddInlineField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
+                embed.AddField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
                 temp++;
             }
             for (int i = temp; i < 3-lenght; i++)
             {
-                embed.AddInlineField($"Items-{i+1} : ", "---");
+                embed.AddField($"Items-{i+1} : ", "---");
             }
-            embed.WithColor(0,0,255);
 
             await Context.Channel.SendMessageAsync("", embed: embed);
+        }
+
+
+        /* SHOWING COMMAND */
+
+        [Command("show quizzes")]
+        public async Task ShowAllQuiz()
+        {
+            string formattedText = "";
+            foreach (var q in Quizzes.GetQuizzes())
+            {
+                formattedText += $"Quiz No-{q.ID}:\nDifficulty:{q.Difficulty}\n";
+                switch (q.Type)
+                {
+                    case "image":
+                        formattedText += $"Type:Image\n";
+                        break;
+                    case "sv":
+                        formattedText += $"Type:Shadowverse Pic\n";
+                        break;
+                    case "ost":
+                        formattedText += $"Type:OST(OP/ED)\n";
+                        break;
+                    case "bonus":
+                        formattedText += $"Type:Bonus\n";
+                        break;
+                    case "voice-sv":
+                        formattedText += $"Type:Shadowverse Voice\n";
+                        break;
+                }
+                formattedText += $"{q.URL}\n\n";
+            }
+            if (formattedText == "")
+            {
+                await Context.Channel.SendMessageAsync("No Quiz Has Been Made, Be The First to make One");
+                return;
+            }
+            await Context.Channel.SendMessageAsync(formattedText);
+        }
+
+
+        /* ADDING COMMAND */
+
+        [Command("add quiz")]
+        public async Task AddingQuiz(string type, string imageUrl, string diff, ulong dropId, [Remainder]string correct)
+        {
+            Quiz made = Quizzes.CreatingQuiz(type, imageUrl, diff, dropId, correct);
+            if (made == null)
+            {
+                await Context.Channel.SendMessageAsync("Failed to Make Quiz");
+                return;
+            }
+            await Context.Channel.SendMessageAsync("Quiz has been made \nDont forget to add the hints");
+        }
+
+        [Command("add item")]
+        public async Task AddingItem(string name, string type, bool active, uint value, string rarity)
+        {
+            Item made = Drops.CreatingItem(name,type,active,value,rarity);
+            if (made == null)
+            {
+                await Context.Channel.SendMessageAsync("Failed to Make Item");
+                return;
+            }
+            await Context.Channel.SendMessageAsync("Item has been made");
+        }
+
+        [Command("quiz")]
+        public async Task StartQuiz(ulong id)
+        {
+            Quiz now = Quizzes.GetQuiz(id);
+            if (now == null)
+            {
+                await Context.Channel.SendMessageAsync("No Quiz Found");
+                return;
+            }
+            string formattedText = $"Quiz No-{now.ID}:\nDifficulty:{now.Difficulty}\n";
+            switch (now.Type)
+            {
+                case "image":
+                    formattedText += $"Type:Image\n";
+                    break;
+                case "sv":
+                    formattedText += $"Type:Shadowverse Pic\n";
+                    break;
+                case "ost":
+                    formattedText += $"Type:OST(OP/ED)\n";
+                    break;
+                case "bonus":
+                    formattedText += $"Type:Bonus\n";
+                    break;
+                case "voice-sv":
+                    formattedText += $"Type:Shadowverse Voice\n";
+                    break;
+            }
+            int lenght = now.Drop.Count;
+            int temp = 0;
+            for (int i = 0; i < lenght; i++)
+            {
+                formattedText+=$"Drop-{i + 1} : {now.Drop[i].Name}\n";
+                temp++;
+            }
+            for (int i = temp; i < 4 - lenght; i++)
+            {
+                formattedText += $"Drop-{i + 1} : --- \n";
+            }
+            formattedText += $"{now.URL}";
+            await Context.Channel.SendMessageAsync(formattedText);
+        }
+
+        [Command("add hint")]
+        public async Task AddingHints(ulong id, string url1, string url2, string url3)
+        {
 
         }
+
+
+
+
+
+
 
         [Command("truth")]
         public async Task FindingTruth(bool x)

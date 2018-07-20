@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 using PWBG_BOT.Core.Items;
 
 namespace PWBG_BOT.Core.System
@@ -11,7 +11,14 @@ namespace PWBG_BOT.Core.System
         public string Type { get; set; }
         public string Difficulty { get; set; }
         public string RightAnswer { get; set; }
-        public string ImageURL { get; set; }
+        public uint WordContainInCorrectAnswer
+        {
+            get
+            {
+                return (uint)RightAnswer.Split().Length;
+            }
+        }
+        public string URL { get; set; }
         public List<string> Hints { get; set; }
         public List<Item> Drop{ get; set; }
     }
