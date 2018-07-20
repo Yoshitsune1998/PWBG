@@ -27,6 +27,18 @@ namespace PWBG_BOT.Core
             return Task.CompletedTask;
         }
 
+        internal static Task StartQuiz()
+        {
+            channel = GlobalVar.Client.GetGuild(464870639153578026).GetTextChannel(464870639153578028);
+            loopTimer = new Timer()
+            {
+                Interval = 60000,
+                AutoReset = false,
+                Enabled = true,
+            };
+            return Task.CompletedTask;
+        }
+
         private static async void OnTimerTicked(object sender, ElapsedEventArgs e)
         {
             await channel.SendMessageAsync("Ping!!!");

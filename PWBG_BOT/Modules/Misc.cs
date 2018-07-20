@@ -18,6 +18,42 @@ namespace PWBG_BOT.Modules
         
         /* STARTER PACK COMMAND */
 
+        [Command("join")]
+        public async Task JoiningBattle()
+        {
+            if(IsHavingThisRole((SocketGuildUser)Context.User,"Quiz Manager") 
+                || IsHavingThisRole((SocketGuildUser)Context.User, "Admin"))
+            {
+                return;
+            }else if(IsHavingThisRole((SocketGuildUser)Context.User, "Player"))
+            {
+                return;
+            }
+            else
+            {
+                await ChangeRole((Context.User as SocketGuildUser), "Player");
+                await Context.Channel.SendMessageAsync($"{Context.User.Mention} joined the battle");
+            }
+        }
+
+        [Command("out")]
+        public async Task OutFromBattle()
+        {
+            if (IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")
+                || IsHavingThisRole((SocketGuildUser)Context.User, "Admin"))
+            {
+                await Context.Channel.SendMessageAsync("You cant join the battle");
+                return;
+            }
+            else if (IsHavingThisRole((SocketGuildUser)Context.User, "Player"))
+            {
+                
+                await RemoveRole((Context.User as SocketGuildUser), "Player");
+                await Context.Channel.SendMessageAsync($"{Context.User.Mention} out from the battle");
+            }
+        }
+
+
         [Command("stats")]
         public async Task Stats()
         {
@@ -25,7 +61,7 @@ namespace PWBG_BOT.Modules
             var account = UserAccounts.GetUserAccount(user);
 
             embed = new EmbedBuilder();
-            embed.WithTitle(Context.User.Username + "'s Profile");
+            embed.WithTitle(user.Username + "'s Profile");
             embed.WithColor(0, 0, 255);
             embed.WithThumbnailUrl(user.GetAvatarUrl());
             embed.AddInlineField("HP : " , account.HP);
@@ -45,6 +81,51 @@ namespace PWBG_BOT.Modules
             }
 
             await Context.Channel.SendMessageAsync("", embed: embed);
+        }
+
+        /* QUIZ COMMAND */
+
+        [Command("quiz")]
+        public async Task StartQuiz(ulong id)
+        {
+            Quiz now = Quizzes.GetQuiz(id);
+            if (now == null)
+            {
+                await Context.Channel.SendMessageAsync("No Quiz Found");
+                return;
+            }
+            string formattedText = $"Quiz No-{now.ID}:\nDifficulty:{now.Difficulty}\n";
+            switch (now.Type)
+            {
+                case "image":
+                    formattedText += $"Type:Image\n";
+                    break;
+                case "sv":
+                    formattedText += $"Type:Shadowverse Pic\n";
+                    break;
+                case "ost":
+                    formattedText += $"Type:OST(OP/ED)\n";
+                    break;
+                case "bonus":
+                    formattedText += $"Type:Bonus\n";
+                    break;
+                case "voice-sv":
+                    formattedText += $"Type:Shadowverse Voice\n";
+                    break;
+            }
+            int lenght = now.Drop.Count;
+            int temp = 0;
+            for (int i = 0; i < lenght; i++)
+            {
+                formattedText += $"Drop-{i + 1} : {now.Drop[i].Name}\n";
+                temp++;
+            }
+            for (int i = temp; i < 4 - lenght; i++)
+            {
+                formattedText += $"Drop-{i + 1} : --- \n";
+            }
+            formattedText += $"{now.URL}";
+            await Context.Channel.SendMessageAsync(formattedText);
         }
 
 
@@ -111,75 +192,12 @@ namespace PWBG_BOT.Modules
             }
             await Context.Channel.SendMessageAsync("Item has been made");
         }
-
-        [Command("quiz")]
-        public async Task StartQuiz(ulong id)
-        {
-            Quiz now = Quizzes.GetQuiz(id);
-            if (now == null)
-            {
-                await Context.Channel.SendMessageAsync("No Quiz Found");
-                return;
-            }
-            string formattedText = $"Quiz No-{now.ID}:\nDifficulty:{now.Difficulty}\n";
-            switch (now.Type)
-            {
-                case "image":
-                    formattedText += $"Type:Image\n";
-                    break;
-                case "sv":
-                    formattedText += $"Type:Shadowverse Pic\n";
-                    break;
-                case "ost":
-                    formattedText += $"Type:OST(OP/ED)\n";
-                    break;
-                case "bonus":
-                    formattedText += $"Type:Bonus\n";
-                    break;
-                case "voice-sv":
-                    formattedText += $"Type:Shadowverse Voice\n";
-                    break;
-            }
-            int lenght = now.Drop.Count;
-            int temp = 0;
-            for (int i = 0; i < lenght; i++)
-            {
-                formattedText+=$"Drop-{i + 1} : {now.Drop[i].Name}\n";
-                temp++;
-            }
-            for (int i = temp; i < 4 - lenght; i++)
-            {
-                formattedText += $"Drop-{i + 1} : --- \n";
-            }
-            formattedText += $"{now.URL}";
-            await Context.Channel.SendMessageAsync(formattedText);
-        }
+        
 
         [Command("add hint")]
         public async Task AddingHints(ulong id, string url1, string url2, string url3)
         {
 
-        }
-
-
-
-
-
-
-
-        [Command("truth")]
-        public async Task FindingTruth(bool x)
-        {
-            Console.WriteLine(x);
-            if (x)
-            {
-                await Context.Channel.SendMessageAsync("LU GAY");
-            }
-            else
-            {
-                await Context.Channel.SendMessageAsync("TETEP GAY");
-            }
-            
         }
 
         [Command("mention")]
@@ -193,7 +211,8 @@ namespace PWBG_BOT.Modules
         public async Task Say([Remainder]string text)
         {
             string uname = Context.User.Username;
-            embed = embedBuilder(text);
+            embed = new EmbedBuilder();
+            embed.WithDescription("Greetings");
             embed.WithTitle(Utilities.GetFormattedText("Say_&NAME", uname));
 
             await Context.Channel.SendMessageAsync("",false,embed);
@@ -202,7 +221,7 @@ namespace PWBG_BOT.Modules
         [Command("secret")]
         public async Task Secret()
         {
-            if (!isHaveThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
                 await Context.Channel.SendMessageAsync(Utilities.GetText("Reveal"));
         }
 
@@ -223,16 +242,6 @@ namespace PWBG_BOT.Modules
             await dm.SendMessageAsync(Utilities.GetText("pm"));
         }
 
-        [Command("myProfile")]
-        public async Task MyProfile()
-        {
-            var account = UserAccounts.GetUserAccount(Context.User);
-            embed = embedBuilder("HP : " + account.HP + "\nKills "+account.Kills+"\nPoints : " + account.Points);
-            embed.WithTitle(Context.User.Username + "'s Profile");
-
-            await Context.Channel.SendMessageAsync("", embed: embed);
-        }
-
         //[Command("sendnudes")]
         //public async Task SendNudes([Remainder]string args = "")
         //{
@@ -246,27 +255,13 @@ namespace PWBG_BOT.Modules
         //    await Context.Channel.SendFileAsync(new MemoryStream(jpgBytes), "hello.jpg");
         //}
 
-        //[Command("waifu")]
-        //public async Task Waifu([Remainder]string text)
-        //{
-        //    string[] options = text.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-        //    Random r = new Random();
-        //    string opt = options[r.Next(0, options.Length)];
-        //    embed = embedBuilder(opt);
-        //    embed.WithTitle("Waifu from user " + Context.User.Username);
-        //    string url = HTMLGenerator.GetImageUrl(opt);
-        //    embed.WithThumbnailUrl(url);
-
-        //    await Context.Channel.SendMessageAsync("", embed: embed);
-        //}
-
              /*
               
              END OF LINE
              
              */
 
-        private bool isHaveThisRole(SocketGuildUser user, string role)
+        private static bool IsHavingThisRole(SocketGuildUser user, string role)
         {
             var res = from r in user.Guild.Roles
                       where r.Name == role
@@ -277,16 +272,23 @@ namespace PWBG_BOT.Modules
             return user.Roles.Contains(targetRole);
         }
 
-        public EmbedBuilder embedBuilder(string text)
+        private static async Task ChangeRole(SocketGuildUser user, string role)
         {
-            var embed = new EmbedBuilder();
-            
-            embed.WithCurrentTimestamp();
-            embed.WithDescription(text);
-            embed.WithColor(0, 255, 0);
-
-            return embed;
+            var res = from r in user.Guild.Roles
+                      where r.Name == role
+                      select r;
+            var des = res.FirstOrDefault();
+            await user.AddRoleAsync(des);
         }
-        
+
+        private static async Task RemoveRole(SocketGuildUser user, string role)
+        {
+            var res = from r in user.Guild.Roles
+                      where r.Name == role
+                      select r;
+            var des = res.FirstOrDefault();
+            await user.RemoveRoleAsync(des);
+        }
+
     }
 }

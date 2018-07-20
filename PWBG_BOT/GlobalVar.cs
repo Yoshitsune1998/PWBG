@@ -8,5 +8,6 @@ namespace PWBG_BOT
     internal static class GlobalVar
     {
         internal static DiscordSocketClient Client { get; set; }
+        internal static bool QuizHasBeenStarted { get; set; }
     }
 }
