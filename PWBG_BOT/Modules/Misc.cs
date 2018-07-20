@@ -5,10 +5,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.System;
+using PWBG_BOT.Core;
 using PWBG_BOT.Core.PlayerInventory;
 using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.UserAccounts;
-using NReco.ImageGenerator;
 
 namespace PWBG_BOT.Modules
 {
@@ -52,7 +52,6 @@ namespace PWBG_BOT.Modules
             }
         }
 
-
         [Command("stats")]
         public async Task Stats()
         {
@@ -74,11 +73,11 @@ namespace PWBG_BOT.Modules
                 embed.AddField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
                 temp++;
             }
-            for (int i = temp; i < 3-lenght; i++)
+            for (int i = temp; i < 3; i++)
             {
                 embed.AddField($"Items-{i+1} : ", "---");
             }
-
+            
             await Context.Channel.SendMessageAsync("", embed: embed);
         }
 
@@ -87,6 +86,7 @@ namespace PWBG_BOT.Modules
         [Command("quiz")]
         public async Task StartQuiz(ulong id)
         {
+            if (GlobalVar.QuizHasBeenStarted) return;
             Quiz now = Quizzes.GetQuiz(id);
             if (now == null)
             {
@@ -119,14 +119,31 @@ namespace PWBG_BOT.Modules
                 formattedText += $"Drop-{i + 1} : {now.Drop[i].Name}\n";
                 temp++;
             }
-            for (int i = temp; i < 4 - lenght; i++)
+            for (int i = temp; i < 3; i++)
             {
                 formattedText += $"Drop-{i + 1} : --- \n";
             }
             formattedText += $"{now.URL}";
+            GlobalVar.selected = now;
+            await ReapetedTimer.StartQuiz();
             await Context.Channel.SendMessageAsync(formattedText);
         }
 
+        [Command("quiz cancel")]
+        public async Task StopQuiz()
+        {
+            if (!GlobalVar.QuizHasBeenStarted) return;
+            ReapetedTimer.StopTimer();
+            GlobalVar.selected = null;
+            await Context.Channel.SendMessageAsync("Quiz Has Been Canceled");
+        }
+
+        [Command("q")]
+        public async Task Answering([Remainder]string answer)
+        {
+            ulong id = GlobalVar.selected.ID;
+            Quizzes.CheckAnswer(answer,id);
+        }
 
         /* SHOWING COMMAND */
 

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
+using PWBG_BOT.Core.System;
 
 namespace PWBG_BOT
 {
-    internal static class GlobalVar
+    public static class GlobalVar
     {
-        internal static DiscordSocketClient Client { get; set; }
-        internal static bool QuizHasBeenStarted { get; set; }
-        internal static int Channeling { get; set; }
+        public static DiscordSocketClient Client { get; set; }
+        public static bool QuizHasBeenStarted = false;
+        public static int Channeling { get; set; }
+        public static Quiz selected { get; set; }
     }
 }

@@ -33,6 +33,11 @@ namespace PWBG_BOT.Core.UserAccounts
             return GetOrCreateAccount(user.Id);
         }
 
+        public static List<UserAccount> GetAllUsers()
+        {
+            return accounts;
+        }
+
         public static Inventory GetInventory(SocketUser user)
         {
             return Inventories.GetOrCreateInventory(user.Id);
