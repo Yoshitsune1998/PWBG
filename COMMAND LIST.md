@@ -115,7 +115,7 @@
 
 > -show item name("item name")
 
-> -show item type("target / self / pass")
+> -show item type("target / self / random / pass")
 
 > -show item active(true/false)
 
@@ -139,7 +139,7 @@
 
 * For Adding Items
 
-> -add item name("item name) type("target / self / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
+> -add item name("item name) type("target / self / random / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
 
 > *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
 
