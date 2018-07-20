@@ -9,5 +9,6 @@ namespace PWBG_BOT
     {
         internal static DiscordSocketClient Client { get; set; }
         internal static bool QuizHasBeenStarted { get; set; }
+        internal static int Channeling { get; set; }
     }
 }

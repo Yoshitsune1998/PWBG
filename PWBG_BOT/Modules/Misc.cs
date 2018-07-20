@@ -47,7 +47,6 @@ namespace PWBG_BOT.Modules
             }
             else if (IsHavingThisRole((SocketGuildUser)Context.User, "Player"))
             {
-                
                 await RemoveRole((Context.User as SocketGuildUser), "Player");
                 await Context.Channel.SendMessageAsync($"{Context.User.Mention} out from the battle");
             }
