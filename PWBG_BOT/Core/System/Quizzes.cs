@@ -75,9 +75,15 @@ namespace PWBG_BOT.Core.System
             return false;
         }
 
+        public static void ResetQuiz()
+        {
+            usedWords = new List<string>();
+        }
+        
         private static uint CountingPoints(uint correct, uint despacito)
         {
-            return (uint)10 * despacito / correct;
+            Console.WriteLine($"correct : {correct} true : {despacito}");
+            return (uint)10 * correct / despacito;
         }
 
         public static uint CheckAnswer(string word, ulong idQuiz)
@@ -85,15 +91,18 @@ namespace PWBG_BOT.Core.System
             Quiz now = GetQuiz(idQuiz);
             if (now == null)
             {
+                Console.WriteLine("No Quiz");
                 return 0;
             }
-            if (!CheckExistedAnswer(word))
+            if (CheckExistedAnswer(word))
             {
+                Console.WriteLine("Exist");
                 return 0;
             }
             uint numberCorrect = CorrectAnswer(word,now);
             if (numberCorrect==0)
             {
+                Console.WriteLine("No Correct");
                 return 0;
             }
             return CountingPoints(numberCorrect, now.WordContainInCorrectAnswer);

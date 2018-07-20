@@ -28,6 +28,50 @@ namespace PWBG_BOT.Core.UserAccounts
             }
         }
 
+        public static void AddingPoints(UserAccount user, uint point)
+        {
+            user.Points += point;
+            SaveAccount();
+        }
+
+        public static void AddAllPoints(UserAccount user)
+        {
+            user.Points += user.TempPoint;
+            user.TempPoint = 0;
+            SaveAccount();
+        }
+
+        public static void TempPoints(UserAccount user, uint point)
+        {
+            if (point <= user.TempPoint) return;
+            user.TempPoint = point;
+            SaveAccount();
+        }
+
+        public static void DecreasingPoints(UserAccount user, uint point)
+        {
+            user.Points -= point;
+            SaveAccount();
+        }
+
+        public static void AddingKills(UserAccount user, uint kill)
+        {
+            user.Kills += kill;
+            SaveAccount();
+        }
+
+        public static void IncreasingHealth(UserAccount user, uint ammount)
+        {
+            user.HP += ammount;
+            SaveAccount();
+        }
+
+        public static void DecreasingHealth(UserAccount user, uint ammount)
+        {
+            user.HP -= ammount;
+            SaveAccount();
+        }
+
         public static UserAccount GetUserAccount(SocketUser user)
         {
             return GetOrCreateAccount(user.Id);
@@ -68,8 +112,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 Debuffs = new List<Debuff>(),
                 HP = 15,
                 Inventory = Inventories.GetOrCreateInventory(id),
-                Kills = 0,
-
+                Kills = 0
             };
             accounts.Add(newAccount);
             SaveAccount();

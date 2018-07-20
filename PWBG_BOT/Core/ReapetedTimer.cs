@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Linq;
-using PWBG_BOT.Core.UserAccounts;
 using Discord.WebSocket;
 
 namespace PWBG_BOT.Core
@@ -63,6 +61,7 @@ namespace PWBG_BOT.Core
                 if (temp.Roles.Contains(des))
                 {
                     var user = UserAccounts.UserAccounts.GetUserAccount(temp);
+                    UserAccounts.UserAccounts.AddAllPoints(user);
                     text += $"{temp.Mention}\nHP : {user.HP}\n" +
                         $"POINT : {user.Points}\nKILL : {user.Kills}\n";
 
@@ -105,6 +104,8 @@ namespace PWBG_BOT.Core
                         text += $"Debuff-{i + 1}: ---\n";
                     }
                     text += "\n\n";
+                    
+                    user.TempPoint = 0;
                 }
             }
             await channel.SendMessageAsync(text);

@@ -13,5 +13,6 @@ namespace PWBG_BOT.Core.UserAccounts
         public uint Kills { get; set; }
         public List<Buff> Buffs { get; set; }
         public List<Debuff> Debuffs { get; set; }
+        public uint TempPoint = 0;
     }
 }

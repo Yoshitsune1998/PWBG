@@ -124,7 +124,9 @@ namespace PWBG_BOT.Modules
                 formattedText += $"Drop-{i + 1} : --- \n";
             }
             formattedText += $"{now.URL}";
+
             GlobalVar.selected = now;
+            Quizzes.ResetQuiz();
             await ReapetedTimer.StartQuiz();
             await Context.Channel.SendMessageAsync(formattedText);
         }
@@ -141,8 +143,18 @@ namespace PWBG_BOT.Modules
         [Command("q")]
         public async Task Answering([Remainder]string answer)
         {
+            if (!GlobalVar.QuizHasBeenStarted) return;
+
             ulong id = GlobalVar.selected.ID;
-            Quizzes.CheckAnswer(answer,id);
+            UserAccount user = UserAccounts.GetUserAccount(Context.User);
+            uint point = Quizzes.CheckAnswer(answer,id);
+            Console.WriteLine(point);
+            if (point == 0)
+            {
+                return;
+            }
+            await Context.Channel.SendMessageAsync($"{Context.User.Mention} {point} point(s)");
+            UserAccounts.TempPoints(user,point);
         }
 
         /* SHOWING COMMAND */
@@ -172,6 +184,7 @@ namespace PWBG_BOT.Modules
                         formattedText += $"Type:Shadowverse Voice\n";
                         break;
                 }
+                formattedText += $"Right Answer : {q.RightAnswer}\n";
                 formattedText += $"{q.URL}\n\n";
             }
             if (formattedText == "")
