@@ -49,6 +49,7 @@ namespace PWBG_BOT.Core.System
 
         private static uint CorrectAnswer(string word, Quiz quiz)
         {
+            usedWords.Add(word);
             string[] words = word.Split();
             uint correctWord = 0;
             string[] corrections = quiz.RightAnswer.Split();
@@ -69,6 +70,7 @@ namespace PWBG_BOT.Core.System
         private static bool CheckExistedAnswer(string word)
         {
             word = word.ToLower();
+            Console.WriteLine(word);
             if (usedWords.Contains(word))
             {
                 return true;

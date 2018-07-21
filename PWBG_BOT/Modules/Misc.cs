@@ -141,7 +141,7 @@ namespace PWBG_BOT.Modules
             Quiz now = Quizzes.GetQuiz(id);
             if (now == null)
             {
-                await Context.Channel.SendMessageAsync("`No Quiz Found`");
+                await Context.Channel.SendMessageAsync("``No Quiz Found``");
                 return;
             }
             string formattedText = $"Quiz No-{now.ID} : \nDifficulty : {now.Difficulty}\n";
@@ -179,7 +179,7 @@ namespace PWBG_BOT.Modules
 
             GlobalVar.Selected = now;
             Quizzes.ResetQuiz();
-            await Context.Channel.SendMessageAsync($"`{formattedText}`");
+            await Context.Channel.SendMessageAsync($"{formattedText}");
             await ReapetedTimer.StartQuiz(time, Context.Guild, (SocketTextChannel)Context.Channel);
         }
 
@@ -190,7 +190,7 @@ namespace PWBG_BOT.Modules
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             ReapetedTimer.StopTimer();
             GlobalVar.Selected = null;
-            await Context.Channel.SendMessageAsync("`Quiz Has Been Canceled`");
+            await Context.Channel.SendMessageAsync("``Quiz Has Been Canceled``");
         }
 
         [Command("q")]
@@ -222,7 +222,7 @@ namespace PWBG_BOT.Modules
             string text = "";
             if (inv.Items.Count <= 0)
             {
-                await Context.Channel.SendMessageAsync("`You dont have any items`");
+                await Context.Channel.SendMessageAsync("``You dont have any items``");
                 return;
             }
             foreach (var item in inv.Items)
@@ -233,7 +233,7 @@ namespace PWBG_BOT.Modules
                 if (item.debuffs != null) text += $"Debuff : {item.debuffs.Name}\n";
                 text += "\n";
             }
-            await Context.Channel.SendMessageAsync($"`{text}`");
+            await Context.Channel.SendMessageAsync($"``{text}``");
         }
 
         [Command("use item")]
@@ -267,7 +267,7 @@ namespace PWBG_BOT.Modules
             }
             else if (text.Equals("Success"))
             {
-                text = "`Item has been used`";
+                text = "``Item has been used``";
             }
             await Context.Channel.SendMessageAsync(text);
         }
@@ -314,10 +314,10 @@ namespace PWBG_BOT.Modules
             }
             if (formattedText == "")
             {
-                await Context.Channel.SendMessageAsync("`No Quiz Has Been Made, Be The First to make One`");
+                await Context.Channel.SendMessageAsync("``No Quiz Has Been Made, Be The First to make One``");
                 return;
             }
-            await Context.Channel.SendMessageAsync($"`{formattedText}`");
+            await Context.Channel.SendMessageAsync($"{formattedText}");
         }
 
         [Command("show players")]
@@ -326,6 +326,7 @@ namespace PWBG_BOT.Modules
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Admin")
                 && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             var users = Context.Guild.Users;
+            EmbedBuilder embed = new EmbedBuilder();
             string text = "";
             foreach (var u in users)
             {
@@ -376,7 +377,8 @@ namespace PWBG_BOT.Modules
                     text += "\n\n";
                 }
             }
-            await Context.Channel.SendMessageAsync(text);
+            embed.WithDescription(text);
+            await Context.Channel.SendMessageAsync("",embed : embed);
         }
 
         [Command("show items")]
@@ -392,7 +394,7 @@ namespace PWBG_BOT.Modules
                 if (t.debuffs != null) text += $"Debuff : {t.debuffs.Name}\n";
                 text += "\n";
             }
-            await Context.Channel.SendMessageAsync($"`{text}`");
+            await Context.Channel.SendMessageAsync($"``{text}``");
         }
 
         #endregion
@@ -406,10 +408,10 @@ namespace PWBG_BOT.Modules
             Quiz made = Quizzes.CreatingQuiz(type, imageUrl, diff, dropId, correct);
             if (made == null)
             {
-                await Context.Channel.SendMessageAsync("`Failed to Make Quiz`");
+                await Context.Channel.SendMessageAsync("``Failed to Make Quiz``");
                 return;
             }
-            await Context.Channel.SendMessageAsync("`Quiz has been made \nDont forget to add the hints`");
+            await Context.Channel.SendMessageAsync("``Quiz has been made \nDont forget to add the hints``");
         }
 
         [Command("add item")]
@@ -419,10 +421,10 @@ namespace PWBG_BOT.Modules
             Item made = Drops.CreatingItem(name,type,active,value,rarity);
             if (made == null)
             {
-                await Context.Channel.SendMessageAsync("`Failed to Make Item`");
+                await Context.Channel.SendMessageAsync("``Failed to Make Item``");
                 return;
             }
-            await Context.Channel.SendMessageAsync("`Item has been made`");
+            await Context.Channel.SendMessageAsync("``Item has been made``");
         }
         
 
@@ -433,7 +435,7 @@ namespace PWBG_BOT.Modules
             Quiz selected = Quizzes.GetQuiz(id);
             if (selected == null)
             {
-                await Context.Channel.SendMessageAsync("`NO QUIZ FOUND WITH THAT ID`");
+                await Context.Channel.SendMessageAsync("``NO QUIZ FOUND WITH THAT ID``");
                 return;
             }
             List<string> hints = new List<string>();
@@ -441,7 +443,7 @@ namespace PWBG_BOT.Modules
             hints.Add(url2);
             hints.Add(url3);
             Quizzes.AddingHints(selected,hints);
-            await Context.Channel.SendMessageAsync("`HINT HAS BEEN ADDED`");
+            await Context.Channel.SendMessageAsync("``HINT HAS BEEN ADDED``");
         }
 
         [Command("give item")]

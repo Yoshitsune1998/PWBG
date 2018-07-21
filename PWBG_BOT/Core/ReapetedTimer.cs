@@ -77,7 +77,8 @@ namespace PWBG_BOT.Core
         {
             var guild = GlobalVar.QuizGuild;
             var users = guild.Users;
-            List<SocketUser> highscores = new List<SocketUser>();
+            uint highscores = 0;
+            List<SocketUser> winner = new List<SocketUser>();
             var role = from r in guild.Roles
                        where r.Name.Equals("Player")
                        select r;
@@ -140,21 +141,25 @@ namespace PWBG_BOT.Core
                     {
                         Console.WriteLine($"point : {user.TempPoint}");
                         
-                        if (highscores.Count == 0)
+                        if (winner.Count == 0)
                         {
-                            highscores.Add(temp);
+                            highscores = user.TempPoint;
+                            winner.Add(temp);
                         }
                         else
                         {
-                            var despacito = UserAccounts.UserAccounts.GetUserAccount(highscores[highscores.Count - 1]);
-                            if (user.TempPoint > despacito.TempPoint)
+                            var despacito = UserAccounts.UserAccounts.GetUserAccount(winner[winner.Count - 1]);
+                            Console.WriteLine($"temp-1 : {user.TempPoint} ; temp-2 : {highscores}");
+                            if (user.TempPoint > highscores)
                             {
-                                highscores.Remove(highscores[highscores.Count - 1]);
-                                highscores.Add(temp);
+                                highscores = user.TempPoint;
+                                winner.Remove(winner[winner.Count - 1]);
+                                winner.Add(temp);
                             }
-                            else if (user.TempPoint == despacito.TempPoint)
+                            else if (user.TempPoint == highscores)
                             {
-                                highscores.Add(temp);
+                                highscores = user.TempPoint;
+                                winner.Add(temp);
                             }
                         }
                         
@@ -165,7 +170,7 @@ namespace PWBG_BOT.Core
             Tasking.Sleep(1000);
             await channel.SendMessageAsync(text);
             Tasking.Sleep(1000);
-            await Quizzes.GiveDrops(highscores, channel);
+            await Quizzes.GiveDrops(winner, channel);
             GlobalVar.QuizHasBeenStarted = false;
             GlobalVar.Selected = null;
             GlobalVar.QuizGuild = null;
