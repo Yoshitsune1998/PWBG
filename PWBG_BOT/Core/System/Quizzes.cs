@@ -57,7 +57,7 @@ namespace PWBG_BOT.Core.System
                 {
                     if (w.ToLower().Equals(c.ToLower()))
                     {
-                        usedWords.Add(w);
+                        usedWords.Add(w.ToLower());
                         correctWord++;
                     }
                 }
@@ -83,7 +83,8 @@ namespace PWBG_BOT.Core.System
         private static uint CountingPoints(uint correct, uint despacito)
         {
             Console.WriteLine($"correct : {correct} true : {despacito}");
-            return (uint)10 * correct / despacito;
+            if (correct == despacito) return 10;
+            return ((uint)10 * correct / despacito) + 1;
         }
 
         public static uint CheckAnswer(string word, ulong idQuiz)
@@ -91,18 +92,15 @@ namespace PWBG_BOT.Core.System
             Quiz now = GetQuiz(idQuiz);
             if (now == null)
             {
-                Console.WriteLine("No Quiz");
                 return 0;
             }
             if (CheckExistedAnswer(word))
             {
-                Console.WriteLine("Exist");
                 return 0;
             }
             uint numberCorrect = CorrectAnswer(word,now);
             if (numberCorrect==0)
             {
-                Console.WriteLine("No Correct");
                 return 0;
             }
             return CountingPoints(numberCorrect, now.WordContainInCorrectAnswer);
@@ -135,6 +133,12 @@ namespace PWBG_BOT.Core.System
             MainStorage.ChangeData("LatestQuizId", id);
             SaveQuizzes();
             return newQuiz;
+        }
+
+        public static void AddingHints(Quiz quiz, List<string> hints)
+        {
+            quiz.Hints = hints;
+            SaveQuizzes();
         }
 
     }

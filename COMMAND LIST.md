@@ -46,11 +46,6 @@
 
 > -q text
 
-* For Requesting Hint [ONLY FOR PARTICIPANT] [ONLY WORK IF QUIZ HAS BEEN STARTED OR BEFORE TIME RUN OUT]
-
->-hint
-
-
 <br>
 
 ## **USING ITEM COMMAND** [ONLY FOR PARTICIPANT]
@@ -89,11 +84,11 @@
 
 > -show player number(1-10^5)
 
-* For Showing Quizes
+* For Showing Quizzes
 
-> -show quizes
+> -show quizzes
 
-* For Showing Quizes with specific word or value
+* For Showing Quizzes with specific word or value
 
 > -show quiz number(1-10^5)
 

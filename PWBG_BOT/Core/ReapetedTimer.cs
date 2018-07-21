@@ -12,10 +12,13 @@ namespace PWBG_BOT.Core
 
         private static List<Timer> timers = new List<Timer>();
 
+        private static List<string> hints = new List<string>();
+
         //2nd timer
-        public static Task StartTimer()
+        public static Task StartTimer(SocketTextChannel e)
         {
-            channel = GlobalVar.Client.GetGuild(464870639153578026).GetTextChannel(464870639153578028);
+            channel = e;
+            
             var loopTimer = new Timer()
             {
                 Interval = 5000,
@@ -28,26 +31,49 @@ namespace PWBG_BOT.Core
             return Task.CompletedTask;
         }
 
-        //1st timer
-        public static Task StartQuiz()
+        //3rd timer
+        public static Task HintCounter(SocketTextChannel e, double QuizTimer)
         {
-            channel = GlobalVar.Client.GetGuild(464870639153578026).GetTextChannel(464870639153578028);
+            channel = e;
             var loopTimer = new Timer()
             {
-                Interval = 60000,
+                Interval = ((QuizTimer - 15000) / 3) - 5000 ,
+                AutoReset = true,
+                Enabled = true
+            };
+            timers.Add(loopTimer);
+            loopTimer.Elapsed += OnHintTicking;
+
+            return Task.CompletedTask;
+        }
+
+        //1st timer
+        public static Task StartQuiz(ulong time, SocketGuild e, SocketTextChannel f)
+        {
+            channel = f;
+            GlobalVar.QuizGuild = e;
+            var loopTimer = new Timer()
+            {
+                Interval = (time * 1000) + 15000,
                 AutoReset = false,
                 Enabled = true,
             };
             timers.Add(loopTimer);
-            StartTimer();
+            
             loopTimer.Elapsed += QuizEnded;
+            Tasking.Sleep(5000);
+            StartTimer(f);
+            //
+            Tasking.Sleep(timers[1].Interval * 3);
+            //
+            HintCounter(f, loopTimer.Interval);
 
             return Task.CompletedTask;
         }
 
         private static async void QuizEnded(object sender, ElapsedEventArgs e)
         {
-            var guild = GlobalVar.Client.GetGuild(464870639153578026);
+            var guild = GlobalVar.QuizGuild;
             var users = guild.Users;
             
             var role = from r in guild.Roles
@@ -110,7 +136,8 @@ namespace PWBG_BOT.Core
             }
             await channel.SendMessageAsync(text);
             GlobalVar.QuizHasBeenStarted = false;
-            GlobalVar.selected = null;
+            GlobalVar.Selected = null;
+            GlobalVar.QuizGuild = null;
         }
 
         private static async void OnTimerTicked(object sender, ElapsedEventArgs e)
@@ -133,9 +160,54 @@ namespace PWBG_BOT.Core
                 GlobalVar.Channeling = 0;
                 GlobalVar.QuizHasBeenStarted = true;
             }
-
             await channel.SendMessageAsync(text);
+        }
 
+        private static async void OnHintTicking(object sender, ElapsedEventArgs e)
+        {
+            GlobalVar.Channeling++;
+            string text = "";
+            
+            text += $"HINT-{GlobalVar.Channeling}\n"; 
+            if (GlobalVar.Channeling == 1)
+            {
+                hints = GlobalVar.Selected.Hints;
+                if (hints.Count > GlobalVar.Channeling - 1)
+                {
+                    text += hints[GlobalVar.Channeling - 1];
+                }
+                else
+                {
+                    text += "";
+                }
+            }
+            else if (GlobalVar.Channeling == 2)
+            {
+                if (hints.Count > GlobalVar.Channeling - 1)
+                {
+                    text += hints[GlobalVar.Channeling - 1];
+                }
+                else
+                {
+                    text += "";
+                }
+            }
+            else if (GlobalVar.Channeling == 3)
+            {
+                if (hints.Count > GlobalVar.Channeling - 1)
+                {
+                    text += hints[GlobalVar.Channeling - 1];
+                }
+                else
+                {
+                    text += "";
+                }
+                timers[1].AutoReset = false;
+                timers[1].Enabled = false;
+                timers.Remove(timers[1]);
+                GlobalVar.Channeling = 0;
+            }
+            await channel.SendMessageAsync(text);
         }
 
         public static void StopTimer()
