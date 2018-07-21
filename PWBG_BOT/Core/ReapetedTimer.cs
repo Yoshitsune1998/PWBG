@@ -39,7 +39,7 @@ namespace PWBG_BOT.Core
             channel = e;
             var loopTimer = new Timer()
             {
-                Interval = ((QuizTimer - 15000) / 3) - 5000 ,
+                Interval = ((QuizTimer - 15000) / 3) - 2500 ,
                 AutoReset = true,
                 Enabled = true
             };
@@ -56,7 +56,7 @@ namespace PWBG_BOT.Core
             GlobalVar.QuizGuild = e;
             var loopTimer = new Timer()
             {
-                Interval = (time * 1000) + 15000,
+                Interval = (time * 1000) + 20000,
                 AutoReset = false,
                 Enabled = true,
             };
@@ -82,6 +82,8 @@ namespace PWBG_BOT.Core
                        where r.Name.Equals("Player")
                        select r;
             var des = role.FirstOrDefault();
+
+            Tasking.Sleep(3000);
 
             await channel.SendMessageAsync($"The right answer is {GlobalVar.Selected.RightAnswer}");
 
@@ -160,7 +162,9 @@ namespace PWBG_BOT.Core
                     UserAccounts.UserAccounts.ResetTempPoint(user);
                 }
             }
+            Tasking.Sleep(1000);
             await channel.SendMessageAsync(text);
+            Tasking.Sleep(1000);
             await Quizzes.GiveDrops(highscores, channel);
             GlobalVar.QuizHasBeenStarted = false;
             GlobalVar.Selected = null;

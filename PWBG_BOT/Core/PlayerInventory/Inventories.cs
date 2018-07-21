@@ -93,10 +93,10 @@ namespace PWBG_BOT.Core.PlayerInventory
         public static string DropItem(SocketUser user,int index)
         {
             Inventory select = GetInventory(user);
-            if (select.Items.Count < index) return "Cant Drop Item";
+            if (select.Items.Count < index) return "`Cant Drop Item`";
             select.Items.Remove(select.Items[index - 1]);
             SaveInvent(user);
-            return "Item Dropped";
+            return "`Item Dropped`";
         }
 
         public static string UseItem(SocketUser user, int index, UserAccount target=null, SocketGuild guild = null)

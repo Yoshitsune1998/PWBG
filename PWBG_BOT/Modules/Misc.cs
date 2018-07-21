@@ -23,6 +23,58 @@ namespace PWBG_BOT.Modules
 
         #region "STARTER PACK COMMANDS"
 
+        [Command("help")]
+        public async Task Help()
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("--------------HELP--------------");
+
+            string x = "-join (for joining the quiz)\n\n-out (for going out from the quiz)" +
+                "\n\n-stats (for showing your stats)\n\n-q + text (for answering the quiz)" +
+                "\n\n-inv show (for showing your inventory more detail then -stats)" +
+                "\n\n-use item [1-3] (use item from inventory based on which number you select)" +
+                "\n\n-inv drop [1-3] (drop item from inventory based on which number you select)" +
+                "\n\n-show items (for showing all items)";
+
+            embed.WithDescription(x);
+            embed.WithColor(52,152,219);
+
+            await Context.Channel.SendMessageAsync("",embed : embed);
+        }
+
+        [Command("help secret")]
+        public async Task HelpForAdmin()
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Admin") 
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager"))return;
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle("--------------HELP--------------");
+
+            string x = "-join (for joining the quiz)\n\n-out (for going out from the quiz)" +
+                "\n\n-stats (for showing your stats)\n\n-q + text (for answering the quiz)" +
+                "\n\n-inv show (for showing your inventory more detail then -stats)" +
+                "\n\n-use item [1-3] (use item from inventory based on which number you select)" +
+                "\n\n-inv drop [1-3] (drop item from inventory based on which number you select)" +
+                "\n\n-show items (for showing all items)" +
+                "\n\n-quiz number-quiz number-of-time[opsional, default = 60s] (for showing the quiz based on the number)" +
+                "\n\n-quiz cancel (for canceling quiz that has been started)" +
+                "\n\n-show quizzes (show all quiz with the hints and right answer)" +
+                "\n\n-show players (show all user with Player Role)" +
+                "\n\n-add quiz type(image / sv / ost / bonus / voice - sv) url(embedded location like imgur / etc) " +
+                "\ndiff(ez / med / hard / ext / imm) drop(item number) correctAnswer(the correct answer from your quiz) " +
+                "\n[Hint added in different command]" +
+                "\n\n-add hint quiznumber(number of quiz that you wanted to insert hint) hints(split with space)" +
+                "\n[Hint must be 3]" +
+                "\n\n-add item name(item name) type(target / self / random / passive) active(true / false) " +
+                "\nvalue(like ammount of damage or heal) rarity(comm / uncomm / etc)" +
+                "\n\n-give item item-number (adding item to your inventory)";
+
+            embed.WithDescription(x);
+            embed.WithColor(52, 152, 219);
+
+            await Context.Channel.SendMessageAsync("", embed: embed);
+        }
+
         [Command("join")]
         public async Task JoiningBattle()
         {
@@ -79,7 +131,7 @@ namespace PWBG_BOT.Modules
 
 #endregion
 
-        #region "QUIZ COMAMANDS"
+        #region "QUIZ COMMANDS"
 
         [Command("quiz")]
         public async Task StartQuiz(ulong id,ulong time=60)
@@ -89,7 +141,7 @@ namespace PWBG_BOT.Modules
             Quiz now = Quizzes.GetQuiz(id);
             if (now == null)
             {
-                await Context.Channel.SendMessageAsync("No Quiz Found");
+                await Context.Channel.SendMessageAsync("`No Quiz Found`");
                 return;
             }
             string formattedText = $"Quiz No-{now.ID} : \nDifficulty : {now.Difficulty}\n";
@@ -127,7 +179,7 @@ namespace PWBG_BOT.Modules
 
             GlobalVar.Selected = now;
             Quizzes.ResetQuiz();
-            await Context.Channel.SendMessageAsync(formattedText);
+            await Context.Channel.SendMessageAsync($"`{formattedText}`");
             await ReapetedTimer.StartQuiz(time, Context.Guild, (SocketTextChannel)Context.Channel);
         }
 
@@ -138,7 +190,7 @@ namespace PWBG_BOT.Modules
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             ReapetedTimer.StopTimer();
             GlobalVar.Selected = null;
-            await Context.Channel.SendMessageAsync("Quiz Has Been Canceled");
+            await Context.Channel.SendMessageAsync("`Quiz Has Been Canceled`");
         }
 
         [Command("q")]
@@ -170,7 +222,7 @@ namespace PWBG_BOT.Modules
             string text = "";
             if (inv.Items.Count <= 0)
             {
-                await Context.Channel.SendMessageAsync("You dont have any items");
+                await Context.Channel.SendMessageAsync("`You dont have any items`");
                 return;
             }
             foreach (var item in inv.Items)
@@ -181,7 +233,7 @@ namespace PWBG_BOT.Modules
                 if (item.debuffs != null) text += $"Debuff : {item.debuffs.Name}\n";
                 text += "\n";
             }
-            await Context.Channel.SendMessageAsync(text);
+            await Context.Channel.SendMessageAsync($"`{text}`");
         }
 
         [Command("use item")]
@@ -215,7 +267,7 @@ namespace PWBG_BOT.Modules
             }
             else if (text.Equals("Success"))
             {
-                text = "Item has been used";
+                text = "`Item has been used`";
             }
             await Context.Channel.SendMessageAsync(text);
         }
@@ -233,6 +285,8 @@ namespace PWBG_BOT.Modules
         [Command("show quizzes")]
         public async Task ShowAllQuiz()
         {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Admin")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             string formattedText = "";
             foreach (var q in Quizzes.GetQuizzes())
             {
@@ -260,15 +314,17 @@ namespace PWBG_BOT.Modules
             }
             if (formattedText == "")
             {
-                await Context.Channel.SendMessageAsync("No Quiz Has Been Made, Be The First to make One");
+                await Context.Channel.SendMessageAsync("`No Quiz Has Been Made, Be The First to make One`");
                 return;
             }
-            await Context.Channel.SendMessageAsync(formattedText);
+            await Context.Channel.SendMessageAsync($"`{formattedText}`");
         }
 
         [Command("show players")]
         public async Task ShowAllPlayers()
         {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Admin")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             var users = Context.Guild.Users;
             string text = "";
             foreach (var u in users)
@@ -276,7 +332,7 @@ namespace PWBG_BOT.Modules
                 if (IsHavingThisRole(u,"Player"))
                 {
                     var user = UserAccounts.GetUserAccount((SocketUser)u);
-                    text += $"{u.Mention}\nHP : {user.HP}\n" +
+                    text += $"{u.Username}\nHP : {user.HP}\n" +
                         $"POINT : {user.Points}\nKILL : {user.Kills}\n";
 
                     //item
@@ -336,7 +392,7 @@ namespace PWBG_BOT.Modules
                 if (t.debuffs != null) text += $"Debuff : {t.debuffs.Name}\n";
                 text += "\n";
             }
-            await Context.Channel.SendMessageAsync(text);
+            await Context.Channel.SendMessageAsync($"`{text}`");
         }
 
         #endregion
@@ -350,10 +406,10 @@ namespace PWBG_BOT.Modules
             Quiz made = Quizzes.CreatingQuiz(type, imageUrl, diff, dropId, correct);
             if (made == null)
             {
-                await Context.Channel.SendMessageAsync("Failed to Make Quiz");
+                await Context.Channel.SendMessageAsync("`Failed to Make Quiz`");
                 return;
             }
-            await Context.Channel.SendMessageAsync("Quiz has been made \nDont forget to add the hints");
+            await Context.Channel.SendMessageAsync("`Quiz has been made \nDont forget to add the hints`");
         }
 
         [Command("add item")]
@@ -363,10 +419,10 @@ namespace PWBG_BOT.Modules
             Item made = Drops.CreatingItem(name,type,active,value,rarity);
             if (made == null)
             {
-                await Context.Channel.SendMessageAsync("Failed to Make Item");
+                await Context.Channel.SendMessageAsync("`Failed to Make Item`");
                 return;
             }
-            await Context.Channel.SendMessageAsync("Item has been made");
+            await Context.Channel.SendMessageAsync("`Item has been made`");
         }
         
 
@@ -377,7 +433,7 @@ namespace PWBG_BOT.Modules
             Quiz selected = Quizzes.GetQuiz(id);
             if (selected == null)
             {
-                await Context.Channel.SendMessageAsync("NO QUIZ FOUND WITH THAT ID");
+                await Context.Channel.SendMessageAsync("`NO QUIZ FOUND WITH THAT ID`");
                 return;
             }
             List<string> hints = new List<string>();
@@ -385,12 +441,14 @@ namespace PWBG_BOT.Modules
             hints.Add(url2);
             hints.Add(url3);
             Quizzes.AddingHints(selected,hints);
-            await Context.Channel.SendMessageAsync("HINT HAS BEEN ADDED");
+            await Context.Channel.SendMessageAsync("`HINT HAS BEEN ADDED`");
         }
 
         [Command("give item")]
         public async Task GiveItem(ulong index)
         {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Admin")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             Item item = Drops.GetSpecificItem(index);
             await Inventories.GiveItem(Context.User, item, (SocketTextChannel)Context.Channel);
         }
@@ -401,13 +459,13 @@ namespace PWBG_BOT.Modules
 
         #region "WAREHOUSE"
 
-        [Command("mention")]
-        public async Task Mention(IGuildUser user)
-        {
-            var us = (SocketUser)user;
-            var account = UserAccounts.GetUserAccount((SocketUser)user);
-            await Context.Channel.SendMessageAsync($"{us.Mention} with id {account.ID} mentioned by {Context.User.Mention}");
-        }
+        //[Command("mention")]
+        //public async Task Mention(IGuildUser user)
+        //{
+        //    var us = (SocketUser)user;
+        //    var account = UserAccounts.GetUserAccount((SocketUser)user);
+        //    await Context.Channel.SendMessageAsync($"{us.Mention} with id {account.ID} mentioned by {Context.User.Mention}");
+        //}
         //[Command("say")]
         //public async Task Say([Remainder]string text)
         //{
