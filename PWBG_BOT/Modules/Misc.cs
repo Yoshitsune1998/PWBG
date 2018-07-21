@@ -1,6 +1,7 @@
 ﻿#region "PACKAGES"
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Discord;
 using Discord.Commands;
@@ -92,7 +93,7 @@ namespace PWBG_BOT.Modules
                 return;
             }
             string formattedText = $"Quiz No-{now.ID} : \nDifficulty : {now.Difficulty}\n";
-            formattedText += $"Time : {time} second(s)";
+            formattedText += $"Time : {time} second(s)\n";
             switch (now.Type)
             {
                 case "image":
@@ -145,8 +146,9 @@ namespace PWBG_BOT.Modules
         {
             if (!GlobalVar.QuizHasBeenStarted) return;
             if (!IsHavingThisRole((SocketGuildUser)Context.User,"Player")) return;
-            ulong id = GlobalVar.Selected.ID;
+            if (UserAccounts.IsDead(Context.User)) return;
             UserAccount user = UserAccounts.GetUserAccount(Context.User);
+            ulong id = GlobalVar.Selected.ID;
             uint point = Quizzes.CheckAnswer(answer,id);
             Console.WriteLine(point);
             if (point == 0)
@@ -157,7 +159,74 @@ namespace PWBG_BOT.Modules
             UserAccounts.TempPoints(user,point);
         }
 
-#endregion
+        #endregion
+
+        #region "ITEM COMMANDS"
+
+        [Command("inv show")]
+        public async Task ShowInventory()
+        {
+            Inventory inv = Inventories.GetInventory(Context.User);
+            string text = "";
+            if (inv.Items.Count <= 0)
+            {
+                await Context.Channel.SendMessageAsync("You dont have any items");
+                return;
+            }
+            foreach (var item in inv.Items)
+            {
+                string act = (item.Active) ? "Active" : "Passive";
+                text += $"Item-{item.ID}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
+                if (item.buffs != null) text += $"Buff : {item.buffs.Name}\n";
+                if (item.debuffs != null) text += $"Debuff : {item.debuffs.Name}\n";
+                text += "\n";
+            }
+            await Context.Channel.SendMessageAsync(text);
+        }
+
+        [Command("use item")]
+        public async Task UsingItem(int index, IGuildUser taggedUser = null)
+        {
+            if (GlobalVar.QuizHasBeenStarted) return;
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player")) return;
+            string text = "";
+            GlobalVar.GuildSelect = Context.Guild;
+            GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
+            if (taggedUser == null)
+            {
+                text += Inventories.UseItem(Context.User, index, null, Context.Guild);
+            }
+            else
+            {
+                var user = UserAccounts.GetUserAccount((SocketUser)taggedUser);
+                text += Inventories.UseItem(Context.User, index, user, Context.Guild);
+            }
+            if (text.Equals("success") && taggedUser != null)
+            {
+                text = $"Items used on {taggedUser.Mention} ";
+            }
+            else if (text.Contains("random"))
+            {
+                string x = "random ";
+                string y = text.Substring(text.IndexOf(x) + x.Length);
+                ulong id = (ulong)Int32.Parse(y);
+                var user = Context.Guild.GetUser(id);
+                text = $"Items randomly used on {user.Mention} ";
+            }
+            else if (text.Equals("Success"))
+            {
+                text = "Item has been used";
+            }
+            await Context.Channel.SendMessageAsync(text);
+        }
+
+        [Command("inv drop")]
+        public async Task DropItemFromInventory(int id)
+        {
+            await Context.Channel.SendMessageAsync(Inventories.DropItem(Context.User, id));
+        }
+
+        #endregion
 
         #region "SHOWING COMMANDS"
 
@@ -195,6 +264,79 @@ namespace PWBG_BOT.Modules
                 return;
             }
             await Context.Channel.SendMessageAsync(formattedText);
+        }
+
+        [Command("show players")]
+        public async Task ShowAllPlayers()
+        {
+            var users = Context.Guild.Users;
+            string text = "";
+            foreach (var u in users)
+            {
+                if (IsHavingThisRole(u,"Player"))
+                {
+                    var user = UserAccounts.GetUserAccount((SocketUser)u);
+                    text += $"{u.Mention}\nHP : {user.HP}\n" +
+                        $"POINT : {user.Points}\nKILL : {user.Kills}\n";
+
+                    //item
+                    text += "Inventory : \n";
+                    int num = 0;
+                    for (int i = 0; i < user.Inventory.Items.Count; i++)
+                    {
+                        text += $"Item-{i + 1}: {user.Inventory.Items[i].Name}\n";
+                        num++;
+                    }
+                    for (int i = num; i < 3; i++)
+                    {
+                        text += $"Item-{i + 1}: ---\n";
+                    }
+
+                    //buff
+                    text += "Buffs : \n";
+                    num = 0;
+                    for (int i = 0; i < user.Buffs.Count; i++)
+                    {
+                        text += $"Buff-{i + 1}: {user.Buffs[i].Name}\n";
+                        num++;
+                    }
+                    for (int i = num; i < 3; i++)
+                    {
+                        text += $"Buff-{i + 1}: ---\n";
+                    }
+
+                    //debuff
+                    text += "Debuffs : \n";
+                    num = 0;
+                    for (int i = 0; i < user.Debuffs.Count; i++)
+                    {
+                        text += $"Debuff-{i + 1}: {user.Debuffs[i].Name}\n";
+                        num++;
+                    }
+                    for (int i = num; i < 3; i++)
+                    {
+                        text += $"Debuff-{i + 1}: ---\n";
+                    }
+                    text += "\n\n";
+                }
+            }
+            await Context.Channel.SendMessageAsync(text);
+        }
+
+        [Command("show items")]
+        public async Task ShowAllItems()
+        {
+            var temp = Drops.GetItems();
+            string text = "";
+            foreach (var t in temp)
+            {
+                string act = (t.Active) ? "Active":"Passive" ;
+                text += $"Item-{t.ID}\nName : {t.Name}\nActive : {act}\nType : {t.Type}\nRarity : {t.Rarity}\n";
+                if (t.buffs != null) text += $"Buff : {t.buffs.Name}\n";
+                if (t.debuffs != null) text += $"Debuff : {t.debuffs.Name}\n";
+                text += "\n";
+            }
+            await Context.Channel.SendMessageAsync(text);
         }
 
         #endregion
@@ -246,17 +388,26 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("HINT HAS BEEN ADDED");
         }
 
+        [Command("give item")]
+        public async Task GiveItem(ulong index)
+        {
+            Item item = Drops.GetSpecificItem(index);
+            await Inventories.GiveItem(Context.User, item, (SocketTextChannel)Context.Channel);
+        }
+
         #endregion
+
+        //end of line
 
         #region "WAREHOUSE"
 
-        //[Command("mention")]
-        //public async Task Mention(IGuildUser user)
-        //{
-        //    var us = (SocketUser)user;
-        //    var account = UserAccounts.GetUserAccount((SocketUser)user);
-        //    await Context.Channel.SendMessageAsync($"{us.Mention} with id {account.ID} mentioned by {Context.User.Mention}");
-        //}
+        [Command("mention")]
+        public async Task Mention(IGuildUser user)
+        {
+            var us = (SocketUser)user;
+            var account = UserAccounts.GetUserAccount((SocketUser)user);
+            await Context.Channel.SendMessageAsync($"{us.Mention} with id {account.ID} mentioned by {Context.User.Mention}");
+        }
         //[Command("say")]
         //public async Task Say([Remainder]string text)
         //{

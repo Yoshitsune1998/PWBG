@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Linq;
+using PWBG_BOT.Core.System;
 using Discord.WebSocket;
 
 namespace PWBG_BOT.Core
@@ -75,11 +77,14 @@ namespace PWBG_BOT.Core
         {
             var guild = GlobalVar.QuizGuild;
             var users = guild.Users;
-            
+            List<SocketUser> highscores = new List<SocketUser>();
             var role = from r in guild.Roles
                        where r.Name.Equals("Player")
                        select r;
             var des = role.FirstOrDefault();
+
+            await channel.SendMessageAsync($"The right answer is {GlobalVar.Selected.RightAnswer}");
+
             string text="";
             foreach (var u in users)
             {
@@ -90,7 +95,6 @@ namespace PWBG_BOT.Core
                     UserAccounts.UserAccounts.AddAllPoints(user);
                     text += $"{temp.Mention}\nHP : {user.HP}\n" +
                         $"POINT : {user.Points}\nKILL : {user.Kills}\n";
-
                     //item
                     text += "Inventory : \n";
                     int num = 0;
@@ -130,11 +134,34 @@ namespace PWBG_BOT.Core
                         text += $"Debuff-{i + 1}: ---\n";
                     }
                     text += "\n\n";
-                    
-                    user.TempPoint = 0;
+                    if(user.TempPoint!=0)
+                    {
+                        Console.WriteLine($"point : {user.TempPoint}");
+                        
+                        if (highscores.Count == 0)
+                        {
+                            highscores.Add(temp);
+                        }
+                        else
+                        {
+                            var despacito = UserAccounts.UserAccounts.GetUserAccount(highscores[highscores.Count - 1]);
+                            if (user.TempPoint > despacito.TempPoint)
+                            {
+                                highscores.Remove(highscores[highscores.Count - 1]);
+                                highscores.Add(temp);
+                            }
+                            else if (user.TempPoint == despacito.TempPoint)
+                            {
+                                highscores.Add(temp);
+                            }
+                        }
+                        
+                    }
+                    UserAccounts.UserAccounts.ResetTempPoint(user);
                 }
             }
             await channel.SendMessageAsync(text);
+            await Quizzes.GiveDrops(highscores, channel);
             GlobalVar.QuizHasBeenStarted = false;
             GlobalVar.Selected = null;
             GlobalVar.QuizGuild = null;
@@ -167,13 +194,18 @@ namespace PWBG_BOT.Core
         {
             GlobalVar.Channeling++;
             string text = "";
-            
-            text += $"HINT-{GlobalVar.Channeling}\n"; 
+
+            if (hints.Count > GlobalVar.Channeling - 1)
+            {
+                text += $"HINT-{GlobalVar.Channeling}\n";
+            }
+             
             if (GlobalVar.Channeling == 1)
             {
                 hints = GlobalVar.Selected.Hints;
                 if (hints.Count > GlobalVar.Channeling - 1)
                 {
+                    text += $"HINT-{GlobalVar.Channeling}\n";
                     text += hints[GlobalVar.Channeling - 1];
                 }
                 else
@@ -216,6 +248,7 @@ namespace PWBG_BOT.Core
             {
                 time.Stop();
             }
+            timers = new List<Timer>();
         }
         
     }

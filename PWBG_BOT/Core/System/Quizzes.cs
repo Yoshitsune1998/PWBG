@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.PlayerInventory;
+using Discord.WebSocket;
 
 namespace PWBG_BOT.Core.System
 {
@@ -82,7 +83,6 @@ namespace PWBG_BOT.Core.System
         
         private static uint CountingPoints(uint correct, uint despacito)
         {
-            Console.WriteLine($"correct : {correct} true : {despacito}");
             if (correct == despacito) return 10;
             return ((uint)10 * correct / despacito) + 1;
         }
@@ -139,6 +139,21 @@ namespace PWBG_BOT.Core.System
         {
             quiz.Hints = hints;
             SaveQuizzes();
+        }
+
+        public static async Task GiveDrops(List<SocketUser> users, SocketTextChannel channel)
+        {
+            Quiz now = GlobalVar.Selected;
+
+            if (now == null) return;
+            
+            foreach (var u in users)
+            {
+                foreach (var i in now.Drop)
+                {
+                    await Inventories.GiveItem(u,i,channel);
+                }
+            }
         }
 
     }

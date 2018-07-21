@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using PWBG_BOT;
+using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Core.BuffAndDebuff;
 
 namespace PWBG_BOT.Core.Items
@@ -99,5 +98,32 @@ namespace PWBG_BOT.Core.Items
             SaveItems();
             return newItem;
         }
+
+        public static bool UseTargetItem(Item used, UserAccount user)
+        {
+            if (user == null && used == null && !used.Active) return false;
+            ItemTech.UseDecreasingHPItem(used,user);
+            return true;
+        }
+
+        public static bool UseRandomItem(Item used, UserAccount user)
+        {
+            if (used == null && !used.Active) return false;
+
+            return true;
+        }
+
+        public static bool UseSelfItem(Item used, UserAccount user)
+        {
+            if (used == null && !used.Active) return false;
+            ItemTech.UseIncreasingHPItem(used,user);
+            return true;
+        }
+
+        public static void PassiveItem(Item used)
+        {
+            if (used == null && used.Active) return;
+        }   
+
     }
 }

@@ -37,6 +37,11 @@ namespace PWBG_BOT.Core.UserAccounts
         public static void AddAllPoints(UserAccount user)
         {
             user.Points += user.TempPoint;
+            SaveAccount();
+        }
+
+        public static void ResetTempPoint(UserAccount user)
+        {
             user.TempPoint = 0;
             SaveAccount();
         }
@@ -76,7 +81,17 @@ namespace PWBG_BOT.Core.UserAccounts
         {
             return GetOrCreateAccount(user.Id);
         }
-
+        
+        public static UserAccount GetUserAccountByID(ulong id)
+        {
+            var result = from a in accounts
+                         where a.ID == id
+                         select a;
+            var account = result.FirstOrDefault();
+            if (account == null) return null;
+            return account;
+        }
+        
         public static List<UserAccount> GetAllUsers()
         {
             return accounts;
@@ -92,7 +107,7 @@ namespace PWBG_BOT.Core.UserAccounts
             DataStorage.SaveUserAccounts(accounts, accountsFile);
         }
 
-        public static UserAccount GetOrCreateAccount(ulong id)
+        private static UserAccount GetOrCreateAccount(ulong id)
         {
             var result = from a in accounts
                          where a.ID == id
@@ -117,6 +132,35 @@ namespace PWBG_BOT.Core.UserAccounts
             accounts.Add(newAccount);
             SaveAccount();
             return newAccount;
+        }
+        
+        public static UserAccount GetRandomPlayer(SocketGuild guild)
+        {
+            var users = guild.Users;
+            List<UserAccount> randomPlayers = new List<UserAccount>();
+            var role = from r in guild.Roles
+                       where r.Name.Equals("Player")
+                       select r;
+            var des = role.FirstOrDefault();
+            foreach (var u in users)
+            {
+                if (u.Roles.Contains(des))
+                {
+                    var user = UserAccounts.GetUserAccount((SocketUser)u);
+                    randomPlayers.Add(user);
+                }
+            }
+            Random gacha = new Random();
+            if (randomPlayers.Count == 0) return null;
+            int luckyIndex = gacha.Next(0,randomPlayers.Count);
+            return randomPlayers[luckyIndex];
+        }
+
+        public static bool IsDead(SocketUser user)
+        {
+            UserAccount account = GetUserAccount(user);
+            if (account.HP <= 0) return true;
+            return false;
         }
 
     }

@@ -56,7 +56,7 @@
 
 * For Using item [Active and Targetable]
 
-> -use item number[1-3] to name [Player Name that want to be targeted]
+> -use item number[1-3] tag-player [Player Name that want to be targeted]
 
 * For using item [Active and self-target only]
 
@@ -134,7 +134,7 @@
 
 * For Adding Items
 
-> -add item name("item name) type("target / self / random / pass") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
+> -add item name("item name) type("target / self / random / passive") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
 
 > *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
 
