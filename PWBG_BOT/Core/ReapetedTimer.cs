@@ -162,7 +162,6 @@ namespace PWBG_BOT.Core
                                 winner.Add(temp);
                             }
                         }
-                        
                     }
                     UserAccounts.UserAccounts.ResetTempPoint(user);
                 }
@@ -255,6 +254,7 @@ namespace PWBG_BOT.Core
         {
             foreach (var time in timers)
             {
+                time.Enabled = false;
                 time.Stop();
             }
             timers = new List<Timer>();
