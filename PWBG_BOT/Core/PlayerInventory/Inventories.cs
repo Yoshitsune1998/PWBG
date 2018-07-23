@@ -132,7 +132,8 @@ namespace PWBG_BOT.Core.PlayerInventory
                         return $"random {(target.ID).ToString()}";
                     }
                 case "self":
-                    if (!Drops.UseSelfItem(use, target))
+                    var selfAcc = UserAccounts.UserAccounts.GetUserAccount(user);
+                    if (!Drops.UseSelfItem(use, selfAcc))
                     {
                         return "Fail to use Item";
                     }

@@ -225,10 +225,11 @@ namespace PWBG_BOT.Modules
                 await Context.Channel.SendMessageAsync("``You dont have any items``");
                 return;
             }
+            int i = 0;
             foreach (var item in inv.Items)
             {
                 string act = (item.Active) ? "Active" : "Passive";
-                text += $"Item-{item.ID}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
+                text += $"Item-{++i}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
                 if (item.buffs != null) text += $"Buff : {item.buffs.Name}\n";
                 if (item.debuffs != null) text += $"Debuff : {item.debuffs.Name}\n";
                 text += "\n";
