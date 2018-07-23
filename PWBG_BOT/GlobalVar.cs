@@ -12,5 +12,6 @@ namespace PWBG_BOT
         public static SocketGuild QuizGuild { get; set; }
         public static SocketTextChannel ChannelSelect { get; set; }
         public static SocketGuild GuildSelect { get; set; }
+        public static bool CanUseItem = false;
     }
 }

@@ -16,11 +16,32 @@ namespace PWBG_BOT.Core
 
         private static List<string> hints = new List<string>();
 
-        //2nd timer
-        public static Task StartTimer(SocketTextChannel e)
+        //1st timer
+        public static async Task StartQuiz(ulong time, SocketGuild e, SocketTextChannel f)
         {
-            channel = e;
-            
+            channel = f;
+            GlobalVar.QuizGuild = e;
+
+            await StrategyTime();
+            await Task.Delay(30000);
+            //
+            await StartTimer();
+            await Task.Delay(15000);
+
+            var loopTimer = new Timer()
+            {
+                Interval = (time * 1000) + 5000,
+                AutoReset = false,
+                Enabled = true,
+            };
+            timers.Add(loopTimer);
+            loopTimer.Elapsed += QuizEnded;
+            await HintCounter(loopTimer.Interval);
+        }
+
+        //2nd timer
+        public static Task StartTimer()
+        {
             var loopTimer = new Timer()
             {
                 Interval = 5000,
@@ -34,9 +55,8 @@ namespace PWBG_BOT.Core
         }
 
         //3rd timer
-        public static Task HintCounter(SocketTextChannel e, double QuizTimer)
+        public static Task HintCounter(double QuizTimer)
         {
-            channel = e;
             var loopTimer = new Timer()
             {
                 Interval = ((QuizTimer - 15000) / 3) - 2500 ,
@@ -49,42 +69,35 @@ namespace PWBG_BOT.Core
             return Task.CompletedTask;
         }
 
-        //1st timer
-        public static Task StartQuiz(ulong time, SocketGuild e, SocketTextChannel f)
+        //4th timer
+        public static async Task StrategyTime()
         {
-            channel = f;
-            GlobalVar.QuizGuild = e;
+            GlobalVar.CanUseItem = true;
             var loopTimer = new Timer()
             {
-                Interval = (time * 1000) + 20000,
+                Interval = 30000,
                 AutoReset = false,
-                Enabled = true,
+                Enabled = true
             };
             timers.Add(loopTimer);
-            
-            loopTimer.Elapsed += QuizEnded;
-            Tasking.Sleep(5000);
-            StartTimer(f);
-            //
-            Tasking.Sleep(timers[1].Interval * 3);
-            //
-            HintCounter(f, loopTimer.Interval);
+            loopTimer.Elapsed += StrategyEnded;
 
-            return Task.CompletedTask;
+            await channel.SendMessageAsync("STRATEGY TIME (30 secs)");
+
         }
 
         private static async void QuizEnded(object sender, ElapsedEventArgs e)
         {
             var guild = GlobalVar.QuizGuild;
             var users = guild.Users;
-            uint highscores = 0;
+            int highscores = 0;
             List<SocketUser> winner = new List<SocketUser>();
             var role = from r in guild.Roles
                        where r.Name.Equals("Player")
                        select r;
             var des = role.FirstOrDefault();
 
-            Tasking.Sleep(3000);
+            await Task.Delay(3000);
 
             await channel.SendMessageAsync($"The right answer is {GlobalVar.Selected.RightAnswer}");
 
@@ -164,11 +177,17 @@ namespace PWBG_BOT.Core
                         }
                     }
                     UserAccounts.UserAccounts.ResetTempPoint(user);
+                    if ((text.Length + 300) > 2048)
+                    {
+                        await channel.SendMessageAsync(text);
+                        text = "";
+                    }
                 }
             }
-            Tasking.Sleep(1000);
+            timers.Clear();
+            await Task.Delay(1000);
             await channel.SendMessageAsync(text);
-            Tasking.Sleep(1000);
+            await Task.Delay(1000);
             await Quizzes.GiveDrops(winner, channel);
             GlobalVar.QuizHasBeenStarted = false;
             GlobalVar.Selected = null;
@@ -189,11 +208,12 @@ namespace PWBG_BOT.Core
             else if (GlobalVar.Channeling == 3)
             {
                 text += "GOOO!!!";
-                timers[1].AutoReset = false;
-                timers[1].Enabled = false;
-                timers.Remove(timers[1]);
+                timers[0].AutoReset = false;
+                timers[0].Enabled = false;
+                timers.Remove(timers[0]);
                 GlobalVar.Channeling = 0;
                 GlobalVar.QuizHasBeenStarted = true;
+                text += $"\n{GlobalVar.Selected.URL}";
             }
             await channel.SendMessageAsync(text);
         }
@@ -250,6 +270,13 @@ namespace PWBG_BOT.Core
             await channel.SendMessageAsync(text);
         }
 
+        public static async void StrategyEnded(object sender, ElapsedEventArgs e)
+        {
+            GlobalVar.CanUseItem = false;
+            timers.Remove(timers[0]);
+            await channel.SendMessageAsync("STRATEGY TIME ENDED!");
+        }
+
         public static void StopTimer()
         {
             foreach (var time in timers)
@@ -257,6 +284,7 @@ namespace PWBG_BOT.Core
                 time.Enabled = false;
                 time.Stop();
             }
+            timers.Clear();
             timers = new List<Timer>();
         }
         

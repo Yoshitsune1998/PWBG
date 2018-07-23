@@ -11,11 +11,11 @@ namespace PWBG_BOT.Core.System
         public string Type { get; set; }
         public string Difficulty { get; set; }
         public string RightAnswer { get; set; }
-        public uint WordContainInCorrectAnswer
+        public int WordContainInCorrectAnswer
         {
             get
             {
-                return (uint)RightAnswer.Split().Length;
+                return RightAnswer.Split().Length;
             }
         }
         public string URL { get; set; }

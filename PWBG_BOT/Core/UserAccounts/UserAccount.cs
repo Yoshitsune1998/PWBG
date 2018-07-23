@@ -7,12 +7,12 @@ namespace PWBG_BOT.Core.UserAccounts
     public class UserAccount
     {
         public ulong ID { get; set; }
-        public uint HP { get; set; }
+        public int HP { get; set; }
         public Inventory Inventory { get; set; }
-        public uint Points { get; set; }
+        public int Points { get; set; }
         public uint Kills { get; set; }
         public List<Buff> Buffs { get; set; }
         public List<Debuff> Debuffs { get; set; }
-        public uint TempPoint = 0;
+        public int TempPoint = 0;
     }
 }

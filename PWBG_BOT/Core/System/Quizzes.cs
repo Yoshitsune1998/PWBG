@@ -47,11 +47,11 @@ namespace PWBG_BOT.Core.System
             DataStorage.SaveQuizzes(quizzes, QuizzesFile);
         }
 
-        private static uint CorrectAnswer(string word, Quiz quiz)
+        private static int CorrectAnswer(string word, Quiz quiz)
         {
             usedWords.Add(word);
             string[] words = word.Split();
-            uint correctWord = 0;
+            int correctWord = 0;
             string[] corrections = quiz.RightAnswer.Split();
             foreach (var w in words)
             {
@@ -83,13 +83,13 @@ namespace PWBG_BOT.Core.System
             usedWords = new List<string>();
         }
         
-        private static uint CountingPoints(uint correct, uint despacito)
+        private static int CountingPoints(int correct, int despacito)
         {
-            if (correct == despacito) return 10;
-            return ((uint)10 * correct / despacito) + 1;
+            if (correct == despacito) return 7;
+            return (7 * correct / despacito) + 1;
         }
 
-        public static uint CheckAnswer(string word, ulong idQuiz)
+        public static int CheckAnswer(string word, ulong idQuiz)
         {
             Quiz now = GetQuiz(idQuiz);
             if (now == null)
@@ -100,7 +100,7 @@ namespace PWBG_BOT.Core.System
             {
                 return 0;
             }
-            uint numberCorrect = CorrectAnswer(word,now);
+            int numberCorrect = CorrectAnswer(word,now);
             if (numberCorrect==0)
             {
                 return 0;
@@ -137,9 +137,9 @@ namespace PWBG_BOT.Core.System
             return newQuiz;
         }
 
-        public static void AddingHints(Quiz quiz, List<string> hints)
+        public static void AddingHints(Quiz quiz, string hints)
         {
-            quiz.Hints = hints;
+            quiz.Hints.Add(hints);
             SaveQuizzes();
         }
 

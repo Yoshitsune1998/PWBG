@@ -1,5 +1,6 @@
 ﻿using PWBG_BOT.Core.UserAccounts;
 using Discord.WebSocket;
+using System;
 
 namespace PWBG_BOT.Core.Items
 {
@@ -8,19 +9,19 @@ namespace PWBG_BOT.Core.Items
         //ANY KIND OF ITEM USED SKILL OR WHATEVER
         public async static void UseDecreasingHPItem(Item item, UserAccount user)
         {
-            user.HP -= item.Value;
-            if (user.HP == 0)
+            UserAccounts.UserAccounts.DecreasingHealth(user, item.Value);
+            
+            if (user.HP <= 0)
             {
+                user.HP = 0;
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
             }
-            UserAccounts.UserAccounts.SaveAccount();
         }
 
         public async static void UseIncreasingHPItem(Item item, UserAccount user)
         {
-            user.HP += item.Value;
-            UserAccounts.UserAccounts.SaveAccount();
+            UserAccounts.UserAccounts.IncreasingHealth(user, item.Value);
             SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
             await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} YOU HAVE BEEN HEALED BY {item.Value} HP");
         }

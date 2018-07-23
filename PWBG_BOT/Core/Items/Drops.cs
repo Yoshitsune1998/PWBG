@@ -66,8 +66,8 @@ namespace PWBG_BOT.Core.Items
             DataStorage.SaveItems(items, ItemsFile);
         }
 
-        public static Item CreatingItem(string name, string type, bool active, uint value, string rarity, 
-            string buffname= "", string debuffname="")
+        public static Item CreatingItem(string name, string type, bool active, int value, string rarity, 
+            string description)
         {
             ulong stId = MainStorage.GetValueOf("LatestItemId");
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
@@ -75,12 +75,12 @@ namespace PWBG_BOT.Core.Items
                          where i.ID == Id
                          select i;
             var item = result.FirstOrDefault();
-            if (item == null) item = CreateItem(Id, name, type, active, value, rarity, buffname, debuffname);
+            if (item == null) item = CreateItem(Id, name, type, active, value, rarity,description);
             return item;
         }
 
-        private static Item CreateItem(ulong id, string name, string type, bool active, uint value, string rarity, 
-            string buffname, string debuffname)
+        private static Item CreateItem(ulong id, string name, string type, bool active, int value, string rarity, string description,
+            string buffname="", string debuffname="")
         {
             var newItem = new Item()
             {
@@ -90,8 +90,9 @@ namespace PWBG_BOT.Core.Items
                 Active = active,
                 Value = value,
                 Rarity = rarity,
-                buffs = Buffs.BuffExist(buffname),
-                debuffs = Debuffs.DebuffExist(debuffname)
+                Buffs = Buffs.BuffExist(buffname),
+                Debuffs = Debuffs.DebuffExist(debuffname),
+                Description = description
             };
             items.Add(newItem);
             MainStorage.ChangeData("LatestItemId",id);

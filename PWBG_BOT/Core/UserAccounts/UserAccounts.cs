@@ -28,7 +28,7 @@ namespace PWBG_BOT.Core.UserAccounts
             }
         }
 
-        public static void AddingPoints(UserAccount user, uint point)
+        public static void AddingPoints(UserAccount user, int point)
         {
             user.Points += point;
             SaveAccount();
@@ -46,14 +46,14 @@ namespace PWBG_BOT.Core.UserAccounts
             SaveAccount();
         }
 
-        public static void TempPoints(UserAccount user, uint point)
+        public static void TempPoints(UserAccount user, int point)
         {
             if (point <= user.TempPoint) return;
             user.TempPoint = point;
             SaveAccount();
         }
 
-        public static void DecreasingPoints(UserAccount user, uint point)
+        public static void DecreasingPoints(UserAccount user, int point)
         {
             user.Points -= point;
             SaveAccount();
@@ -65,13 +65,13 @@ namespace PWBG_BOT.Core.UserAccounts
             SaveAccount();
         }
 
-        public static void IncreasingHealth(UserAccount user, uint ammount)
+        public static void IncreasingHealth(UserAccount user, int ammount)
         {
             user.HP += ammount;
             SaveAccount();
         }
 
-        public static void DecreasingHealth(UserAccount user, uint ammount)
+        public static void DecreasingHealth(UserAccount user, int ammount)
         {
             user.HP -= ammount;
             SaveAccount();

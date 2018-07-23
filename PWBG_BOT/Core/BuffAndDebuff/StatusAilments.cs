@@ -6,5 +6,14 @@ namespace PWBG_BOT.Core.BuffAndDebuff
 {
     class StatusAilments
     {
+        public static void Burn()
+        {
+
+        }
+
+        public static void Poison()
+        {
+
+        }
     }
 }

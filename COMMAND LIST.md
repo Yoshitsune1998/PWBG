@@ -134,7 +134,7 @@
 
 * For Adding Items
 
-> -add item name("item name) type("target / self / random / passive") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc")
+> -add item name("item name) type("target / self / random / passive") active(true/false) value("like ammount of damage or heal") rarity("comm / uncomm / etc") description ("description of the item")
 
 > *NB : FOR PASSIVE ITEM YOU MUST MAKE THE TYPE PASS
 

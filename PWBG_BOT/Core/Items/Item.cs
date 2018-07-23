@@ -11,9 +11,10 @@ namespace PWBG_BOT.Core.Items
         public string Name { get; set; }
         public string Type { get; set; }
         public bool Active { get; set; }
-        public uint Value { get; set; }
+        public int Value { get; set; }
         public string Rarity { get; set; }
-        public Buff buffs { get; set; }
-        public Debuff debuffs { get; set; }
+        public Buff Buffs { get; set; }
+        public Debuff Debuffs { get; set; }
+        public string Description { get; set; }
     }
 }
