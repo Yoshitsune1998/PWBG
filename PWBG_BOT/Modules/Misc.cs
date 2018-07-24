@@ -241,6 +241,7 @@ namespace PWBG_BOT.Modules
         public async Task UsingItem(int index, IGuildUser taggedUser = null)
         {
             if (!GlobalVar.CanUseItem) return;
+            if (UserAccounts.IsDead(Context.User)) return;
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player")) return;
             string text = "";
             GlobalVar.GuildSelect = Context.Guild;
@@ -513,18 +514,31 @@ namespace PWBG_BOT.Modules
         #region "GOD COMMANDS"
 
         [Command("give me")]
-        public async Task GiveItem(ulong index)
+        public async Task GiveItem(ulong index, IGuildUser guildUser=null)
         {
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
                 && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             Item item = Drops.GetSpecificItem(index);
+            if (guildUser!=null)
+            {
+                await Inventories.GiveItem((SocketUser)guildUser, item, (SocketTextChannel)Context.Channel);
+                return;
+            }
             await Inventories.GiveItem(Context.User, item, (SocketTextChannel)Context.Channel);
         }
 
         [Command("heal me")]
-        public async Task Heal()
+        public async Task Heal(IGuildUser guildUser = null)
         {
-            UserAccount me = UserAccounts.GetUserAccount(Context.User);
+            UserAccount me = new UserAccount();
+            if (guildUser != null)
+            {
+                me = UserAccounts.GetUserAccount((SocketUser)guildUser);
+            }
+            else
+            {
+                me = UserAccounts.GetUserAccount(Context.User);
+            }
             UserAccounts.IncreasingHealth(me,15);
             await Context.Channel.SendMessageAsync("YOU HAVE BEEN HEALED");
         }
