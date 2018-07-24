@@ -152,7 +152,8 @@ namespace PWBG_BOT.Core.UserAccounts
             }
             Random gacha = new Random();
             if (randomPlayers.Count == 0) return null;
-            int luckyIndex = gacha.Next(0,randomPlayers.Count);
+            int luckyIndex = (int)gacha.Next(0,randomPlayers.Count);
+            Console.WriteLine(luckyIndex);
             return randomPlayers[luckyIndex];
         }
 

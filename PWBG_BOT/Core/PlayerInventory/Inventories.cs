@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Core.Items;
@@ -127,10 +128,7 @@ namespace PWBG_BOT.Core.PlayerInventory
                     {
                         return "Fail to use Item";
                     }
-                    else
-                    {
-                        return $"random {(target.ID).ToString()}";
-                    }
+                    break;
                 case "self":
                     var selfAcc = UserAccounts.UserAccounts.GetUserAccount(user);
                     if (!Drops.UseSelfItem(use, selfAcc))

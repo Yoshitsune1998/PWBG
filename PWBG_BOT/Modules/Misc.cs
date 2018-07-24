@@ -258,15 +258,7 @@ namespace PWBG_BOT.Modules
             {
                 text = $"Items used on {taggedUser.Mention} ";
             }
-            else if (text.Contains("random"))
-            {
-                string x = "random ";
-                string y = text.Substring(text.IndexOf(x) + x.Length);
-                ulong id = (ulong)Int32.Parse(y);
-                var user = Context.Guild.GetUser(id);
-                text = $"Items randomly used on {user.Mention} ";
-            }
-            else if (text.Equals("Success"))
+            else if (text.Equals("success"))
             {
                 text = "`Item has been used`";
             }

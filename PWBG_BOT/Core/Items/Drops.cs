@@ -103,6 +103,7 @@ namespace PWBG_BOT.Core.Items
         public static bool UseTargetItem(Item used, UserAccount user)
         {
             if (user == null && used == null && !used.Active) return false;
+            Console.WriteLine("masuk drops");
             ItemTech.UseDecreasingHPItem(used,user);
             return true;
         }

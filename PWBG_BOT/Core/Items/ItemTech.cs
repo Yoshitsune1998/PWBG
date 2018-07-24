@@ -10,12 +10,17 @@ namespace PWBG_BOT.Core.Items
         public async static void UseDecreasingHPItem(Item item, UserAccount user)
         {
             UserAccounts.UserAccounts.DecreasingHealth(user, item.Value);
-            
+
             if (user.HP <= 0)
             {
                 user.HP = 0;
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+            }
+            else
+            {
+                SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
+                await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!!");
             }
         }
 
