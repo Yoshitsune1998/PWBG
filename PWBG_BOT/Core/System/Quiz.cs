@@ -19,6 +19,7 @@ namespace PWBG_BOT.Core.System
             }
         }
         public string URL { get; set; }
+        public string FullImage { get; set; }
         public List<string> Hints { get; set; }
         public List<Item> Drop{ get; set; }
     }

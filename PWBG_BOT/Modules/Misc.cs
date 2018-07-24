@@ -62,12 +62,13 @@ namespace PWBG_BOT.Modules
                 "\n\n-show quizzes (show all quiz with the hints and right answer)" +
                 "\n\n-show players (show all user with Player Role)" +
                 "\n\n-add quiz type(image / sv / ost / bonus / voice - sv) url(embedded location like imgur / etc) " +
+                "\nurl-fullimage (if nothing then type x)" +
                 "\ndiff(ez / med / hard / ext / imm) drop(item number) correctAnswer(the correct answer from your quiz) " +
                 "\n[Hint added in different command]" +
-                "\n\n-add hint quiznumber(number of quiz that you wanted to insert hint) hints(split with space)" +
-                "\n[Hint must be 3]" +
+                "\n\n-add hint quiznumber(number of quiz that you wanted to insert hint) hint" +
                 "\n\n-add item name(item name) type(target / self / random / passive) active(true / false) " +
-                "\nvalue(like ammount of damage or heal) rarity(comm / uncomm / etc) description (description of the item)" +
+                "\n\n-add drop quiznumber itemnumber" +
+                "\n\nvalue(like ammount of damage or heal) rarity(comm / uncomm / etc) description (description of the item)" +
                 "\n\n-give item item-number (adding item to your inventory)";
 
             embed.WithDescription(x);
@@ -410,6 +411,11 @@ namespace PWBG_BOT.Modules
                     text = "";
                 }
             }
+            if (text.Equals(""))
+            {
+                await Context.Channel.SendMessageAsync("`NO ITEM HAS BEEN MADE BE THE FIRST TO MAKE ONE!`");
+                return;
+            }
             await Context.Channel.SendMessageAsync($"`{text}`");
         }
 
@@ -436,11 +442,11 @@ namespace PWBG_BOT.Modules
         #region "ADDING COMMANDS"
 
         [Command("add quiz")]
-        public async Task AddingQuiz(string type, string imageUrl, string diff, ulong dropId, [Remainder]string correct)
+        public async Task AddingQuiz(string type, string imageUrl, string fullImage,string diff, [Remainder]string correct)
         {
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
                 && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
-            Quiz made = Quizzes.CreatingQuiz(type, imageUrl, diff, dropId, correct);
+            Quiz made = Quizzes.CreatingQuiz(type, imageUrl, fullImage,diff, correct);
             if (made == null)
             {
                 await Context.Channel.SendMessageAsync("`Failed to Make Quiz`");
@@ -448,7 +454,7 @@ namespace PWBG_BOT.Modules
             }
             await Context.Channel.SendMessageAsync("`Quiz has been made \nDont forget to add the hints`");
         }
-
+        
         [Command("add item")]
         public async Task AddingItem(string name, string type, bool active, int value, string rarity, [Remainder]string description = "")
         {
@@ -463,6 +469,31 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("`Item has been made`");
         }
         
+        [Command("add drop")]
+        public async Task AddingDrops(ulong id, ulong idItem)
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            Quiz selected = Quizzes.GetQuiz(id);
+            if (selected == null)
+            {
+                await Context.Channel.SendMessageAsync("`NO QUIZ FOUND WITH THAT ID`");
+                return;
+            }
+            if (selected.Drop.Count >= 3)
+            {
+                await Context.Channel.SendMessageAsync("`CAN'T ADD MORE DROPS`");
+                return;
+            }
+            Item drop = Drops.GetSpecificItem(idItem);
+            if(drop == null)
+            {
+                await Context.Channel.SendMessageAsync("`NO ITEM FOUND WITH THAT ID`");
+                return;
+            }
+            Quizzes.AddingDrops(selected,drop);
+            await Context.Channel.SendMessageAsync("`DROP HAS BEEN ADDED`");
+        }
 
         [Command("add hint")]
         public async Task AddingHints(ulong id, [Remainder]string url1)

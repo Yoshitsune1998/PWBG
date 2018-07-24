@@ -108,28 +108,36 @@ namespace PWBG_BOT.Core.System
             return CountingPoints(numberCorrect, now.WordContainInCorrectAnswer);
         }
 
-        public static Quiz CreatingQuiz(string type, string imageUrl,string diff, ulong dropId, string correct)
+        public static Quiz CreatingQuiz(string type, string imageUrl,string fullImage,string diff, string correct)
         {
             ulong stId = MainStorage.GetValueOf("LatestQuizId");
+            
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
             var result = from i in quizzes
                          where i.ID == Id
                          select i;
             var quiz = result.FirstOrDefault();
-            if (quiz == null) quiz = CreateQuiz(Id, type, imageUrl, diff, dropId, correct);
+            if (quiz == null)
+            {
+                if (fullImage.Equals("x") || fullImage.Equals("X"))
+                {
+                    fullImage = "";
+                }
+                quiz = CreateQuiz(Id, type, imageUrl, fullImage, diff, correct);
+            }
             return quiz;
         }
 
-        private static Quiz CreateQuiz(ulong id, string type, string imageUrl, string diff, ulong dropId, string correct)
+        private static Quiz CreateQuiz(ulong id, string type, string imageUrl, string fullImage,string diff, string correct)
         {
             var newQuiz = new Quiz()
             {
                 ID = id,
                 Type = type,
                 Difficulty = diff,
-                Drop = Drops.PackageOfItem(dropId),
                 URL = imageUrl,
                 RightAnswer = correct,
+                FullImage = fullImage
              };
             quizzes.Add(newQuiz);
             MainStorage.ChangeData("LatestQuizId", id);
@@ -140,6 +148,12 @@ namespace PWBG_BOT.Core.System
         public static void AddingHints(Quiz quiz, string hints)
         {
             quiz.Hints.Add(hints);
+            SaveQuizzes();
+        }
+
+        public static void AddingDrops(Quiz quiz, Item item)
+        {
+            quiz.Drop.Add(item);
             SaveQuizzes();
         }
 
