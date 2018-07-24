@@ -1,7 +1,6 @@
 ﻿#region "PACKAGES"
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;

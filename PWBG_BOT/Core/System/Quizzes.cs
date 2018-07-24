@@ -137,7 +137,9 @@ namespace PWBG_BOT.Core.System
                 Difficulty = diff,
                 URL = imageUrl,
                 RightAnswer = correct,
-                FullImage = fullImage
+                FullImage = fullImage,
+                Drop = new List<Item>(),
+                Hints = new List<string>()
              };
             quizzes.Add(newQuiz);
             MainStorage.ChangeData("LatestQuizId", id);
