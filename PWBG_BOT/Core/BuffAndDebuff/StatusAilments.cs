@@ -10,7 +10,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
     {
         public static async void Burn(UserAccount user, Debuff burn)
         {
-            user.HP -= burn.Value;
+            UserAccounts.UserAccounts.DecreasingHealth(user,burn.Value);
             bool loss = false;
             bool die = false;
             burn.Countdown--;
@@ -21,8 +21,8 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             }
             var realuser = GlobalVar.GuildSelect.GetUser(user.ID);
             if (user.HP <= 0) {
-                user.HP = 0;
                 die = !die;
+                loss = true;
             } 
             UserAccounts.UserAccounts.SaveAccount();
             await GlobalVar.ChannelSelect.SendMessageAsync($"{realuser.Mention} get BURNED, HP become {user.HP}");

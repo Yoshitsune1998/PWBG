@@ -126,18 +126,38 @@ namespace PWBG_BOT.Core.PlayerInventory
             await GlobalVar.ChannelSelect.SendMessageAsync("kontol");
         }
 
-        public static bool CheckHaveChainMail(UserAccount user)
+        public static bool CheckHaveThisItem(UserAccount user, string name)
         {
             var realUser = GlobalVar.GuildSelect.GetUser(user.ID);
             Inventory inv = GetInventory(realUser);
             foreach (var i in inv.Items)
             {
-                if (i.Name.Equals("Chainmail")) return true;
+                if (i.Name.Equals("name")) return true;
             }
             return false;
         }
 
-        public static async void UseItem(SocketUser user, int index, UserAccount target = null, int optional = 0)
+        public static async void PassiveItem(SocketUser user)
+        {
+            var select = GetInventory(user);
+            var acc = UserAccounts.UserAccounts.GetUserAccount(user);
+            foreach (var item in select.Items)
+            {
+                if (!item.Active)
+                {
+                    switch (item.Name)
+                    {
+                        case "Armlet Of Greed":
+                            ItemTech.ArmletOfGreed(acc, item);
+                            break;
+                        case "sadas":
+                            break;
+                    }
+                }
+            }
+        }
+
+        public static async void UseActiveItem(SocketUser user, int index, UserAccount target = null, int optional = 0)
         {
             var select = GetInventory(user);
             if (select.Items.Count < index) await GlobalVar.ChannelSelect.SendMessageAsync("No Item Selected");
@@ -299,12 +319,19 @@ namespace PWBG_BOT.Core.PlayerInventory
                     }
                     despacito.Add(target);
                     break;
-                case "Nuclear Launcher":
-                    alive = UserAccounts.UserAccounts.GetAllAliveUsers();
-                    if (alive.Count <= 1) return;
-                    ItemTech.UseDecreasingHPAOE(me, 2, alive);
-                    alive.Remove(me);
-                    despacito = alive;
+                case "Nullifier":
+                    if (target == null)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
+                        return;
+                    }
+                    if (target.Buffs.Count <= 0)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("This player doesn't have buff to remove");
+                        return;
+                    }
+                    ItemTech.RemoveRandomTargetBuff(target);
+                    despacito.Add(target);
                     break;
                     #endregion
 

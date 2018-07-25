@@ -12,7 +12,6 @@ namespace PWBG_BOT.Core.Items
             UserAccounts.UserAccounts.DecreasingHealth(user, item.Value);
             if (user.HP <= 0)
             {
-                user.HP = 0;
                 UserAccounts.UserAccounts.AddingKills(me, 1);
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
@@ -31,7 +30,6 @@ namespace PWBG_BOT.Core.Items
             UserAccounts.UserAccounts.DecreasingHealth(user, value);
             if (user.HP <= 0)
             {
-                user.HP = 0;
                 UserAccounts.UserAccounts.AddingKills(me, 1);
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
@@ -93,6 +91,29 @@ namespace PWBG_BOT.Core.Items
             UserAccounts.UserAccounts.AddingPoints(user, item.Value);
             SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
             await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} YOUR POINTS HAVE BEEN DECREASED BY {item.Value}");
+        }
+
+        public async static void RemoveRandomTargetBuff(UserAccount user)
+        {
+            Buff remove = UserAccounts.UserAccounts.GetRandomBuff(user);
+            SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
+            await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BUFF {remove.Name} HAS BEEN REMOVED");
+            user.Buffs.Remove(remove);
+            UserAccounts.UserAccounts.SaveAccount();
+        }
+
+        public async static void ArmletOfGreed(UserAccount user,Item item)
+        {
+            var realUser = GlobalVar.GuildSelect.GetUser(user.ID);
+            await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} {item.Name} ACTIVATE");
+            UserAccounts.UserAccounts.AddingPoints(user,item.Value);
+            await GlobalVar.ChannelSelect.SendMessageAsync("YOU GOT 2 POINT");
+            UserAccounts.UserAccounts.DecreasingHealth(user,item.Value);
+            await GlobalVar.ChannelSelect.SendMessageAsync("YOU GOT 2 DAMAGE");
+            if (user.HP <= 0)
+            {
+                await GlobalVar.ChannelSelect.SendMessageAsync("YOU DIED!!!");
+            }
         }
 
     }

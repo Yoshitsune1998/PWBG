@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using System.Linq;
 using PWBG_BOT.Core.PlayerInventory;
 using PWBG_BOT.Core.BuffAndDebuff;
+using PWBG_BOT.Core.Items;
 
 namespace PWBG_BOT.Core.UserAccounts
 {
@@ -71,11 +72,71 @@ namespace PWBG_BOT.Core.UserAccounts
             SaveAccount();
         }
 
-        public static void DecreasingHealth(UserAccount user, int ammount)
+        public static async void DecreasingHealth(UserAccount user, int ammount)
         {
-            if (Inventories.CheckHaveChainMail(user) && user.HP - ammount <= 0) user.HP = 1;
-            else user.HP -= ammount;
+            if (Inventories.CheckHaveThisItem(user, "Chainmail") && user.HP - ammount <= 0)
+            {
+                if (CheckHaveReversality(user))
+                {
+                    IncreasingHealth(user, ammount);
+                    user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
+                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    return;
+                }
+                user.HP = 1;
+                Item getto = Drops.GetSpecificItem("Chainmail");
+                SocketUser realuser = GlobalVar.GuildSelect.GetUser(user.ID);
+                Inventories.DropAnyItem(realuser, getto);
+            }
+            else if (Inventories.CheckHaveThisItem(user, "Bulletproof Vest"))
+            {
+                ammount = (ammount / 2) + 1;
+                if (CheckHaveReversality(user))
+                {
+                    IncreasingHealth(user, ammount);
+                    user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
+                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    return;
+                }
+                user.HP -= ammount;
+                if (user.HP < 0) user.HP = 0;
+                Item getto = Drops.GetSpecificItem("Bulletproof Vest");
+                SocketUser realuser = GlobalVar.GuildSelect.GetUser(user.ID);
+                Inventories.DropAnyItem(realuser, getto);
+            }
+            else if (user.HP - ammount < 0)
+            {
+                if (CheckHaveReversality(user))
+                {
+                    IncreasingHealth(user, ammount);
+                    user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
+                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    return;
+                }
+                user.HP = 0;
+            }
+            else
+            {
+                if (CheckHaveReversality(user))
+                {
+                    IncreasingHealth(user, ammount);
+                    user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
+                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    return;
+                }
+                user.HP -= ammount;
+            }
             SaveAccount();
+        }
+
+        public static bool CheckHaveReversality(UserAccount user)
+        {
+            if (user.Buffs.Count <= 0) return false;
+            foreach (var b in user.Buffs)
+            {
+                if (b.Name.Equals("Reversality")) return true;
+            }
+            return false;
         }
 
         public static UserAccount GetUserAccount(SocketUser user)
@@ -170,6 +231,14 @@ namespace PWBG_BOT.Core.UserAccounts
             return randomPlayers[luckyIndex];
         }
 
+        public static Buff GetRandomBuff(UserAccount target)
+        {
+            if (target.Buffs.Count == 1) return target.Buffs[0];
+            Random rand = new Random();
+            int luckyBuff = rand.Next(0,target.Buffs.Count);
+            return target.Buffs[luckyBuff];
+        }
+
         public static UserAccount GetRandomBesideMe(UserAccount me)
         {
             UserAccount target;
@@ -198,7 +267,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 switch (d.Name)
                 {
                     case "Burn":
-                        BuffAndDebuff.StatusAilments.Burn(user, d);
+                        StatusAilments.Burn(user, d);
                         break;
                     //more status ailment later
                 }

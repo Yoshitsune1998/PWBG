@@ -23,7 +23,6 @@ namespace PWBG_BOT
             }
             );
             _client.Log += _client_Log;
-            //_client.Ready += ReapetedTimer.StartTimer;
             await _client.LoginAsync(TokenType.Bot, Config.bot.token);
             await _client.StartAsync();
             GlobalVar.Client = _client;

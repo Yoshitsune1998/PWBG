@@ -55,6 +55,17 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             return null;
         }
 
+        public static Buff GetSpecificBuff(string name)
+        {
+            if (buffs == null) return null;
+            var result = from i in buffs
+                         where i.Name == name
+                         select i;
+            if (result == null) return null;
+            var item = result.FirstOrDefault();
+            return item;
+        }
+
         public static List<Buff> GetBuffs()
         {
             return buffs;
