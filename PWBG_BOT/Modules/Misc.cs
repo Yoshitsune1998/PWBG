@@ -120,14 +120,36 @@ namespace PWBG_BOT.Modules
             embed.AddField("Inventory : ", "Items List(1-3) : ");
             for (int i = 0; i < lenght; i++)
             {
-                embed.AddField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
+                embed.AddInlineField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
                 temp++;
             }
             for (int i = temp; i < 3; i++)
             {
-                embed.AddField($"Items-{i+1} : ", "---");
+                embed.AddInlineField($"Items-{i+1} : ", "---");
             }
-            
+            lenght = account.Buffs.Count;
+            temp = 0;
+            for (int i = 0; i < lenght; i++)
+            {
+                embed.AddInlineField($"Buffs-{i + 1} : ", account.Buffs[i].Name);
+                temp++;
+            }
+            for (int i = temp; i < 3; i++)
+            {
+                embed.AddInlineField($"Buffs-{i + 1} : ", "---");
+            }
+            lenght = account.Debuffs.Count;
+            temp = 0;
+            for (int i = 0; i < lenght; i++)
+            {
+                embed.AddInlineField($"Debuffs-{i + 1} : ", account.Debuffs[i].Name);
+                temp++;
+            }
+            for (int i = temp; i < 3; i++)
+            {
+                embed.AddInlineField($"Debuffs-{i + 1} : ", "---");
+            }
+
             await Context.Channel.SendMessageAsync("", embed: embed);
         }
 
@@ -233,8 +255,6 @@ namespace PWBG_BOT.Modules
             {
                 string act = (item.Active) ? "Active" : "Passive";
                 text += $"Item-{++i}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
-                //if (item.Buffs != null) text += $"Buff : {item.Buffs.Name}\n";
-                //if (item.Debuffs != null) text += $"Debuff : {item.Debuffs.Name}\n";
                 text += "\n";
             }
             await Context.Channel.SendMessageAsync($"`{text}`");
@@ -379,7 +399,7 @@ namespace PWBG_BOT.Modules
             foreach (var t in temp)
             {
                 string act = (t.Active) ? "Active":"Passive" ;
-                text += $"Item-{t.ID}\nName : {t.Name}\nActive : {act}\nType : {t.Type}\nRarity : {t.Rarity}\n";
+                text += $"Item-{t.ID}\nName : {t.Name}\nUsage : {act}\nType : {t.Type}\nRarity : {t.Rarity}\n";
                 text += "\n";
                 if ((text.Length + 300) > 2048)
                 {
@@ -409,7 +429,7 @@ namespace PWBG_BOT.Modules
             {
                 string text = "";
                 string act = (select.Active) ? "Active" : "Passive";
-                text += $"Item-{select.ID}\nName : {select.Name}\nActive : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
+                text += $"Item-{select.ID}\nName : {select.Name}\nUsage : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
                 foreach (var item in select.Buffs)
                 {
                     text += $"Buff : {item.Name}, description : {item.Tech}\n";
@@ -618,7 +638,7 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("YOU HAVE BEEN HEALED");
         }
 
-        #endregion
+        #endregion  
 
         //end of line
 
