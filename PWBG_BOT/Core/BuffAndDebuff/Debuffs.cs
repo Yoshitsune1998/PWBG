@@ -55,6 +55,17 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             return null;
         }
 
+        public static Debuff GetSpecificDebuff(string name)
+        {
+            if (debuffs == null) return null;
+            var result = from i in debuffs
+                         where i.Name == name
+                         select i;
+            if (result == null) return null;
+            var item = result.FirstOrDefault();
+            return item;
+        }
+
         public static List<Debuff> GetDebuffs()
         {
             return debuffs;

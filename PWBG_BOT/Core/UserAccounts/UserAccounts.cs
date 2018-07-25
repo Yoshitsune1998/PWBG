@@ -76,7 +76,7 @@ namespace PWBG_BOT.Core.UserAccounts
         {
             if (Inventories.CheckHaveThisItem(user, "Chainmail") && user.HP - ammount <= 0)
             {
-                if (CheckHaveReversality(user))
+                if (CheckHaveThisBuff(user, "Reversality"))
                 {
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
@@ -91,22 +91,24 @@ namespace PWBG_BOT.Core.UserAccounts
             else if (Inventories.CheckHaveThisItem(user, "Bulletproof Vest"))
             {
                 ammount = (ammount / 2) + 1;
-                if (CheckHaveReversality(user))
+                bool temp = false;
+                if (CheckHaveThisBuff(user, "Reversality"))
                 {
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
                     await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
-                    return;
+                    temp = !temp;
                 }
-                user.HP -= ammount;
-                if (user.HP < 0) user.HP = 0;
                 Item getto = Drops.GetSpecificItem("Bulletproof Vest");
                 SocketUser realuser = GlobalVar.GuildSelect.GetUser(user.ID);
                 Inventories.DropAnyItem(realuser, getto);
+                if (temp) return;
+                user.HP -= ammount;
+                if (user.HP < 0) user.HP = 0;
             }
             else if (user.HP - ammount < 0)
             {
-                if (CheckHaveReversality(user))
+                if (CheckHaveThisBuff(user, "Reversality"))
                 {
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
@@ -117,7 +119,7 @@ namespace PWBG_BOT.Core.UserAccounts
             }
             else
             {
-                if (CheckHaveReversality(user))
+                if (CheckHaveThisBuff(user, "Reversality"))
                 {
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
@@ -129,12 +131,12 @@ namespace PWBG_BOT.Core.UserAccounts
             SaveAccount();
         }
 
-        public static bool CheckHaveReversality(UserAccount user)
+        public static bool CheckHaveThisBuff(UserAccount user, string name)
         {
             if (user.Buffs.Count <= 0) return false;
             foreach (var b in user.Buffs)
             {
-                if (b.Name.Equals("Reversality")) return true;
+                if (b.Name.Equals(name)) return true;
             }
             return false;
         }
@@ -239,6 +241,17 @@ namespace PWBG_BOT.Core.UserAccounts
             return target.Buffs[luckyBuff];
         }
 
+        public static async void GiveBuff(UserAccount user, Item item, SocketTextChannel channel)
+        {
+            foreach (var b in item.Buffs)
+            {
+                if (user.Buffs.Count >= 3) return;
+                user.Buffs.Add(b);
+                await channel.SendMessageAsync($"YOU GOT {b.Name} BUFF");
+                SaveAccount();
+            }
+        }
+
         public static UserAccount GetRandomBesideMe(UserAccount me)
         {
             UserAccount target;
@@ -268,6 +281,9 @@ namespace PWBG_BOT.Core.UserAccounts
                 {
                     case "Burn":
                         StatusAilments.Burn(user, d);
+                        break;
+                    default:
+                        StatusAilments.DecreaseDebuffCountDown(user,d);
                         break;
                     //more status ailment later
                 }

@@ -13,7 +13,15 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             UserAccounts.UserAccounts.DecreasingHealth(user,burn.Value);
             bool loss = false;
             bool die = false;
-            burn.Countdown--;
+            Debuff target = new Debuff();
+            foreach (var u in user.Debuffs)
+            {
+                if (u.Name.Equals("Burn"))
+                {
+                    target = u;
+                }
+            }
+            if (target == null) return;
             if (burn.Countdown <= 0)
             {
                 user.Debuffs.Remove(burn);
@@ -25,9 +33,23 @@ namespace PWBG_BOT.Core.BuffAndDebuff
                 loss = true;
             } 
             UserAccounts.UserAccounts.SaveAccount();
-            await GlobalVar.ChannelSelect.SendMessageAsync($"{realuser.Mention} get BURNED, HP become {user.HP}");
+            await GlobalVar.ChannelSelect.SendMessageAsync($"{realuser.Mention} get {target.Name}ED, HP become {user.HP}");
             if(die) await GlobalVar.ChannelSelect.SendMessageAsync("YOU DIED!!");
-            if (loss) await GlobalVar.ChannelSelect.SendMessageAsync("BURN HAS BEEN REMOVED");
+            if (loss) await GlobalVar.ChannelSelect.SendMessageAsync($"{target.Name} HAS BEEN REMOVED");
+        }
+
+        public static async void DecreaseDebuffCountDown(UserAccount user, Debuff debuff)
+        {
+            foreach (var u in user.Debuffs)
+            {
+                if (u == debuff)
+                {
+                    if (u.Countdown == -1) return;
+                    user.Debuffs.Remove(debuff);
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{u.Name} HAS BEEN REMOVED");
+                    UserAccounts.UserAccounts.SaveAccount();
+                }
+            }
         }
 
     }

@@ -101,12 +101,14 @@ namespace PWBG_BOT.Core
             await Task.Delay(3000);
 
             await channel.SendMessageAsync($"The right answer is {GlobalVar.Selected.RightAnswer}");
+            await Task.Delay(1000);
 
             foreach (var p in pacito)
             {
                 UserAccounts.UserAccounts.StatusAilment(p);
+                var realuser = GlobalVar.QuizGuild.GetUser(p.ID);
+                PlayerInventory.Inventories.CountDownItem(realuser);
             }
-
             string text="";
             foreach (var u in users)
             {

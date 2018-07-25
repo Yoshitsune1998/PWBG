@@ -179,6 +179,8 @@ namespace PWBG_BOT.Modules
 
             GlobalVar.Selected = now;
             Quizzes.ResetQuiz();
+            GlobalVar.GuildSelect = Context.Guild;
+            GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
             await Context.Channel.SendMessageAsync($"{formattedText}");
             await ReapetedTimer.StartQuiz(time, Context.Guild, (SocketTextChannel)Context.Channel);
         }
@@ -238,32 +240,14 @@ namespace PWBG_BOT.Modules
         }
 
         [Command("use item", RunMode = RunMode.Async)]
-        public async Task UsingItem(int index, IGuildUser taggedUser = null)
+        public async void UsingItem(int index, IGuildUser taggedUser = null, int optional = 0)
         {
             if (!GlobalVar.CanUseItem) return;
             if (UserAccounts.IsDead(Context.User)) return;
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player")) return;
-            string text = "";
             GlobalVar.GuildSelect = Context.Guild;
             GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
-            if (taggedUser == null)
-            {
-                //text += Inventories.UseItem(Context.User, index, null);
-            }
-            else
-            {
-                var user = UserAccounts.GetUserAccount((SocketUser)taggedUser);
-                //text += Inventories.UseItem(Context.User, index, user);
-            }
-            if (text.Equals("success") && taggedUser != null)
-            {
-                text = $"Items used on {taggedUser.Mention} ";
-            }
-            else if (text.Equals("success"))
-            {
-                text = "`Item has been used`";
-            }
-            await Context.Channel.SendMessageAsync(text);
+            await Context.Channel.SendMessageAsync("");
         }
 
         [Command("inv drop")]
@@ -461,6 +445,32 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("`Item has been made`");
         }
         
+        [Command("add item buff")]
+        public async Task AddingBuffToItem(ulong id, string buffname)
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            Item select = Drops.GetSpecificItem(id);
+            if (select == null) return;
+            Buff buff = Buffs.GetSpecificBuff(buffname);
+            if (buff == null) return;
+            select.Buffs.Add(buff);
+            await Context.Channel.SendMessageAsync("ADDING BUFF SUCCESS");
+        }
+
+        [Command("add item debuff")]
+        public async Task AddingDebuffToItem(ulong id, string debuffname)
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            Item select = Drops.GetSpecificItem(id);
+            if (select == null) return;
+            Debuff debuff = Debuffs.GetSpecificDebuff(debuffname);
+            if (debuff == null) return;
+            select.Debuffs.Add(debuff);
+            await Context.Channel.SendMessageAsync("ADDING BUFF SUCCESS");
+        }
+
         [Command("add drop")]
         public async Task AddingDrops(ulong id, ulong idItem)
         {

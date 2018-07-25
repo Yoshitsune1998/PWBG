@@ -37,7 +37,24 @@ namespace PWBG_BOT.Core.PlayerInventory
             Inventory inv = GetInventory(user);
             inv.Items.Add(item);
             await channel.SendMessageAsync($"{user.Mention} get {item.Name}");
+            UserAccount acc = UserAccounts.UserAccounts.GetUserAccount(user);
+            UserAccounts.UserAccounts.GiveBuff(acc,item,channel);
             SaveInvent(user);
+        }
+
+        public static void CountDownItem(SocketUser user)
+        {
+            UserAccount acc = UserAccounts.UserAccounts.GetUserAccount(user);
+            foreach (var item in acc.Inventory.Items)
+            {
+                if (item.Countdown == -1) continue;
+                item.Countdown--;
+                if (item.Countdown == 0)
+                {
+                    DropAnyItem(user, item);
+                }
+            }
+            UserAccounts.UserAccounts.SaveAccount();
         }
 
         public static bool CheckFullInventory(SocketUser user)
@@ -114,16 +131,12 @@ namespace PWBG_BOT.Core.PlayerInventory
             SaveInvent(user);
         }
 
-        public static void DropAnyItem(SocketUser user, Item item)
+        public static async void DropAnyItem(SocketUser user, Item item)
         {
             Inventory select = GetInventory(user);
             select.Items.Remove(item);
             SaveInvent(user);
-        }
-
-        public static async void DecreaseCountdown(Item item)
-        {
-            await GlobalVar.ChannelSelect.SendMessageAsync("kontol");
+            await GlobalVar.ChannelSelect.SendMessageAsync("`Item Dropped`");
         }
 
         public static bool CheckHaveThisItem(UserAccount user, string name)
@@ -137,7 +150,7 @@ namespace PWBG_BOT.Core.PlayerInventory
             return false;
         }
 
-        public static async void PassiveItem(SocketUser user)
+        public static void PassiveItem(SocketUser user)
         {
             var select = GetInventory(user);
             var acc = UserAccounts.UserAccounts.GetUserAccount(user);
@@ -150,7 +163,7 @@ namespace PWBG_BOT.Core.PlayerInventory
                         case "Armlet Of Greed":
                             ItemTech.ArmletOfGreed(acc, item);
                             break;
-                        case "sadas":
+                        default:
                             break;
                     }
                 }
@@ -176,6 +189,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                         await GlobalVar.ChannelSelect.SendMessageAsync("There is no more player to target");
                         return;
                     }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
+                        return;
+                    }
                     ItemTech.UseDecreasingHPItem(me,use, target);
                     despacito.Add(target);
                     break;
@@ -186,6 +204,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                         await GlobalVar.ChannelSelect.SendMessageAsync("There is no more player to target");
                         return;
                     }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
+                        return;
+                    }
                     ItemTech.UseDecreasingHPItem(me,use, target);
                     despacito.Add(target);
                     break;
@@ -194,6 +217,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                     if (target == null)
                     {
                         await GlobalVar.ChannelSelect.SendMessageAsync("There is no more player to target");
+                        return;
+                    }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
                         return;
                     }
                     ItemTech.UseDecreasingHPItem(me, use, target);
@@ -213,6 +241,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                     if (target == null)
                     {
                         await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
+                        return;
+                    }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
                         return;
                     }
                     if (target.HP > 3)
@@ -288,6 +321,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                         await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
                         return;
                     }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
+                        return;
+                    }
                     if (optional <= 0) return;
                     ItemTech.UseDecreasingHPItem(me,optional,target);
                     despacito.Add(target);
@@ -296,6 +334,11 @@ namespace PWBG_BOT.Core.PlayerInventory
                     if (target == null)
                     {
                         await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
+                        return;
+                    }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
                         return;
                     }
                     var alive = UserAccounts.UserAccounts.GetAllAliveUsers();
@@ -317,12 +360,22 @@ namespace PWBG_BOT.Core.PlayerInventory
                         await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
                         return;
                     }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
+                        return;
+                    }
                     despacito.Add(target);
                     break;
                 case "Nullifier":
                     if (target == null)
                     {
                         await GlobalVar.ChannelSelect.SendMessageAsync("Tag a player to use this item");
+                        return;
+                    }
+                    if (UserAccounts.UserAccounts.CheckHaveThisBuff(target, "Stealth"))
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("That target can't be targeted");
                         return;
                     }
                     if (target.Buffs.Count <= 0)
@@ -333,9 +386,9 @@ namespace PWBG_BOT.Core.PlayerInventory
                     ItemTech.RemoveRandomTargetBuff(target);
                     despacito.Add(target);
                     break;
-                    #endregion
-
+                    
             }
+            #endregion
             foreach (var d in use.Debuffs)
             {
                 foreach (var u in despacito)
