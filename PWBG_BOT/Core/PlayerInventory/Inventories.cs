@@ -110,7 +110,7 @@ namespace PWBG_BOT.Core.PlayerInventory
         public static async void DropItem(SocketUser user,int index)
         {
             Inventory select = GetInventory(user);
-            if (select.Items.Count < index || select.Items[index - 1].Type.Equals("Passive"))
+            if (select.Items.Count < index || !select.Items[index - 1].Active)
             {
                 await GlobalVar.ChannelSelect.SendMessageAsync("`Can't Drop Item`");
             }

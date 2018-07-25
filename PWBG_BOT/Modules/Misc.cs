@@ -1,6 +1,7 @@
 ﻿#region "PACKAGES"
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -243,6 +244,7 @@ namespace PWBG_BOT.Modules
         public async void UsingItem(int index, IGuildUser taggedUser = null, int optional = 0)
         {
             if (!GlobalVar.CanUseItem) return;
+            if (UserAccounts.CheckHaveThisBuff(UserAccounts.GetUserAccount(Context.User), "Panic")) return;
             if (UserAccounts.IsDead(Context.User)) return;
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player")) return;
             GlobalVar.GuildSelect = Context.Guild;
@@ -258,7 +260,7 @@ namespace PWBG_BOT.Modules
 
         #endregion
 
-        #region "SHOWING COMMANDS"
+        #region "SHOWING AND FINDING COMMANDS"
 
         [Command("show quizzes")]
         public async Task ShowAllQuiz()
@@ -378,8 +380,6 @@ namespace PWBG_BOT.Modules
             {
                 string act = (t.Active) ? "Active":"Passive" ;
                 text += $"Item-{t.ID}\nName : {t.Name}\nActive : {act}\nType : {t.Type}\nRarity : {t.Rarity}\n";
-                //if (t.Buffs != null) text += $"Buff : {t.Buffs.Name}\n";
-                //if (t.Debuffs != null) text += $"Debuff : {t.Debuffs.Name}\n";
                 text += "\n";
                 if ((text.Length + 300) > 2048)
                 {
@@ -396,20 +396,58 @@ namespace PWBG_BOT.Modules
         }
 
         [Command("find item")]
-        public async Task GetItem(string name)
+        public async Task GetItem([Remainder]string name)
         {
-            Item select = Drops.GetSpecificItem(name);
-            if (select == null)
+            List<Item> find = Drops.WordFind(name);
+            Console.WriteLine(find.Count);
+            if (find.Count <= 0)
             {
                 await Context.Channel.SendMessageAsync($"`NO ITEM FOUND WITH THAT NAME`");
                 return;
             }
+            foreach (var select in find)
+            {
+                string text = "";
+                string act = (select.Active) ? "Active" : "Passive";
+                text += $"Item-{select.ID}\nName : {select.Name}\nActive : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
+                foreach (var item in select.Buffs)
+                {
+                    text += $"Buff : {item.Name}, description : {item.Tech}\n";
+                }
+                foreach (var item in select.Debuffs)
+                {
+                    text += $"Debuff : {item.Name}, description : {item.Tech}\n";
+                }
+                text += $"Description : {select.Description}";
+                await Context.Channel.SendMessageAsync($"`{text}`");
+            }
+        }
+
+        [Command("find buff")]
+        public async Task GetBuff([Remainder]string name)
+        {
+            Buff find = Buffs.GetSpecificBuff(name);
+            if (find == null)
+            {
+                await Context.Channel.SendMessageAsync($"`No Buff Found`");
+                return;
+            }
             string text = "";
-            string act = (select.Active) ? "Active" : "Passive";
-            text += $"Item-{select.ID}\nName : {select.Name}\nActive : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
-            //if (select.Buffs != null) text += $"Buff : {select.Buffs.Name}\n";
-            //if (select.Debuffs != null) text += $"Debuff : {select.Debuffs.Name}\n";
-            text += $"Description : {select.Description}";
+            text += $"Name : {find.Name}\nCountdown : {find.Countdown}\nDescription : {find.Tech}";
+            await Context.Channel.SendMessageAsync($"`{text}`");
+        }
+
+        [Command("find debuff")]
+        public async Task GetDebuff([Remainder]string name)
+        {
+            Debuff find = Debuffs.GetSpecificDebuff(name);
+            if (find == null)
+            {
+                await Context.Channel.SendMessageAsync($"`No Debuff Found`");
+                return;
+            }
+            string text = "";
+            text += $"Name : {find.Name}\nCountdown : {find.Countdown}\nDescription : {find.Tech}";
             await Context.Channel.SendMessageAsync($"`{text}`");
         }
 

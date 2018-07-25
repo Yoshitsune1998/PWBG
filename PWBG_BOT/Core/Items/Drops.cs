@@ -24,6 +24,31 @@ namespace PWBG_BOT.Core.Items
             }
         }
 
+        public static List<Item> WordFind(string word)
+        {
+            List<Item> added = new List<Item>();
+            foreach (var item in items)
+            {
+                string[] wordItem = item.Name.Split();
+                string[] wordFind = word.Split();
+                bool find = false;
+                foreach (var w in wordItem)
+                {
+                    if (find) break;
+                    foreach (var f in wordFind)
+                    {
+                        if (w.ToLower().Equals(f.ToLower()))
+                        {
+                            added.Add(item);
+                            find = !find;
+                            break;
+                        }
+                    }
+                }
+            }
+            return added;
+        }
+
         public static List<Item> GetItems()
         {
             return items;

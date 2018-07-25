@@ -59,7 +59,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
         {
             if (buffs == null) return null;
             var result = from i in buffs
-                         where i.Name == name
+                         where i.Name.ToLower().Equals(name.ToLower())
                          select i;
             if (result == null) return null;
             var item = result.FirstOrDefault();
