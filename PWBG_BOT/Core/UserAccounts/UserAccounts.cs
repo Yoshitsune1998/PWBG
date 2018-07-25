@@ -73,7 +73,8 @@ namespace PWBG_BOT.Core.UserAccounts
 
         public static void DecreasingHealth(UserAccount user, int ammount)
         {
-            user.HP -= ammount;
+            if (Inventories.CheckHaveChainMail(user) && user.HP - ammount <= 0) user.HP = 1;
+            else user.HP -= ammount;
             SaveAccount();
         }
 
@@ -95,6 +96,17 @@ namespace PWBG_BOT.Core.UserAccounts
         public static List<UserAccount> GetAllUsers()
         {
             return accounts;
+        }
+
+        public static List<UserAccount> GetAllAliveUsers()
+        {
+            List<UserAccount> alive = new List<UserAccount>();
+            foreach (var a in accounts)
+            {
+                if (a.HP <= 0) continue;
+                alive.Add(a);
+            }
+            return alive;
         }
 
         public static Inventory GetInventory(SocketUser user)
@@ -147,6 +159,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 if (u.Roles.Contains(des))
                 {
                     var user = UserAccounts.GetUserAccount((SocketUser)u);
+                    if (user.HP <= 0) continue;
                     randomPlayers.Add(user);
                 }
             }
@@ -157,11 +170,39 @@ namespace PWBG_BOT.Core.UserAccounts
             return randomPlayers[luckyIndex];
         }
 
+        public static UserAccount GetRandomBesideMe(UserAccount me)
+        {
+            UserAccount target;
+            if (accounts.Count<=0)
+            {
+                return null;
+            }
+            do
+            { target = GetRandomPlayer(GlobalVar.GuildSelect); }
+            while (me == target);
+            return target;
+        }
+
         public static bool IsDead(SocketUser user)
         {
             UserAccount account = GetUserAccount(user);
             if (account.HP <= 0) return true;
             return false;
+        }
+
+        public static void StatusAilment(UserAccount user)
+        {
+            if (user.Debuffs.Count<=0) return;
+            foreach (var d in user.Debuffs)
+            {
+                switch (d.Name)
+                {
+                    case "Burn":
+                        BuffAndDebuff.StatusAilments.Burn(user, d);
+                        break;
+                    //more status ailment later
+                }
+            }
         }
 
     }

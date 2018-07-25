@@ -67,7 +67,7 @@ namespace PWBG_BOT.Core.Items
         }
 
         public static Item CreatingItem(string name, string type, bool active, int value, string rarity, 
-            string description)
+            int countdown ,string description)
         {
             ulong stId = MainStorage.GetValueOf("LatestItemId");
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
@@ -75,12 +75,13 @@ namespace PWBG_BOT.Core.Items
                          where i.ID == Id
                          select i;
             var item = result.FirstOrDefault();
-            if (item == null) item = CreateItem(Id, name, type, active, value, rarity,description);
+            name = name.Replace("-", " ");
+            if (item == null) item = CreateItem(Id, name, type, active, value, rarity,countdown,description);
             return item;
         }
 
-        private static Item CreateItem(ulong id, string name, string type, bool active, int value, string rarity, string description,
-            string buffname="", string debuffname="")
+        private static Item CreateItem(ulong id, string name, string type, bool active, int value, string rarity, 
+            int countdown,string description)
         {
             var newItem = new Item()
             {
@@ -90,42 +91,16 @@ namespace PWBG_BOT.Core.Items
                 Active = active,
                 Value = value,
                 Rarity = rarity,
-                Buffs = Buffs.BuffExist(buffname),
-                Debuffs = Debuffs.DebuffExist(debuffname),
-                Description = description
+                Buffs = new List<Buff>(),
+                Debuffs = new List<Debuff>(),
+                Description = description,
+                Countdown = countdown
             };
             items.Add(newItem);
             MainStorage.ChangeData("LatestItemId",id);
             SaveItems();
             return newItem;
         }
-
-        public static bool UseTargetItem(Item used, UserAccount user)
-        {
-            if (user == null && used == null && !used.Active) return false;
-            Console.WriteLine("masuk drops");
-            ItemTech.UseDecreasingHPItem(used,user);
-            return true;
-        }
-
-        public static bool UseRandomItem(Item used, UserAccount user)
-        {
-            if (used == null && !used.Active) return false;
-
-            return true;
-        }
-
-        public static bool UseSelfItem(Item used, UserAccount user)
-        {
-            if (used == null && !used.Active) return false;
-            ItemTech.UseIncreasingHPItem(used,user);
-            return true;
-        }
-
-        public static void PassiveItem(Item used)
-        {
-            if (used == null && used.Active) return;
-        }   
 
     }
 }

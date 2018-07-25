@@ -55,12 +55,17 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             return null;
         }
 
+        public static List<Debuff> GetDebuffs()
+        {
+            return debuffs;
+        }
+
         public static void SaveDebuffs()
         {
             DataStorage.SaveDebuffs(debuffs, DebuffsFile);
         }
 
-        private static Debuff GetOrCreateDebuff(string name, string tech, uint value)
+        public static Debuff CreatingDebuff(string name, string tech, int value, int countdown)
         {
             ulong stId = MainStorage.GetValueOf("LatestDebuffId");
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
@@ -68,18 +73,19 @@ namespace PWBG_BOT.Core.BuffAndDebuff
                          where i.ID == Id
                          select i;
             var deb = result.FirstOrDefault();
-            if (deb == null) deb = CreateDebuff(Id, name, tech, value);
+            if (deb == null) deb = CreateDebuff(Id, name, tech, value,countdown);
             return deb;
         }
 
-        private static Debuff CreateDebuff(ulong id, string name, string tech, uint value)
+        private static Debuff CreateDebuff(ulong id, string name, string tech, int value, int countdown)
         {
             var newDebuffs = new Debuff()
             {
                 ID = id,
                 Name = name,
                 Tech = tech,
-                Value = value
+                Value = value,
+                Countdown = countdown
             };
             debuffs.Add(newDebuffs);
             MainStorage.ChangeData("LatestDebuffId", id);

@@ -55,7 +55,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             return null;
         }
 
-        public static List<Buff> GetItems()
+        public static List<Buff> GetBuffs()
         {
             return buffs;
         }
@@ -65,7 +65,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             DataStorage.SaveBuffs(buffs, BuffsFile);
         }
 
-        private static Buff CreatingBuff(string name, string tech, uint value)
+        public static Buff CreatingBuff(string name, string tech, int value, int countdown)
         {
             ulong stId = MainStorage.GetValueOf("LatestBuffId");
             ulong Id = (ulong)Convert.ToInt32(stId) + 1;
@@ -73,18 +73,19 @@ namespace PWBG_BOT.Core.BuffAndDebuff
                          where i.ID == Id
                          select i;
             var buf = result.FirstOrDefault();
-            if (buf == null) buf = CreateBuff(Id, name, tech, value);
+            if (buf == null) buf = CreateBuff(Id, name, tech, value, countdown);
             return buf;
         }
 
-        private static Buff CreateBuff(ulong id, string name, string tech, uint value)
+        private static Buff CreateBuff(ulong id, string name, string tech, int value, int countdown)
         {
             var newBuff = new Buff()
             {
                 ID = id,
                 Name = name,
                 Tech = tech,
-                Value = value
+                Value = value,
+                Countdown = countdown
             };
             buffs.Add(newBuff);
             MainStorage.ChangeData("LatestBuffId", id);

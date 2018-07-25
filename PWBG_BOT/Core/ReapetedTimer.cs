@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Linq;
 using PWBG_BOT.Core.System;
+using PWBG_BOT.Core.UserAccounts;
 using Discord.WebSocket;
 
 namespace PWBG_BOT.Core
@@ -96,10 +97,15 @@ namespace PWBG_BOT.Core
                        where r.Name.Equals("Player")
                        select r;
             var des = role.FirstOrDefault();
-
+            List<UserAccount> pacito = UserAccounts.UserAccounts.GetAllAliveUsers();
             await Task.Delay(3000);
 
             await channel.SendMessageAsync($"The right answer is {GlobalVar.Selected.RightAnswer}");
+
+            foreach (var p in pacito)
+            {
+                UserAccounts.UserAccounts.StatusAilment(p);
+            }
 
             string text="";
             foreach (var u in users)
@@ -190,6 +196,7 @@ namespace PWBG_BOT.Core
             await Task.Delay(1000);
             await Quizzes.GiveDrops(winner, channel);
             GlobalVar.QuizHasBeenStarted = false;
+            GlobalVar.CanUseItem = false;
             GlobalVar.Selected = null;
             GlobalVar.QuizGuild = null;
         }
@@ -233,7 +240,6 @@ namespace PWBG_BOT.Core
                 hints = GlobalVar.Selected.Hints;
                 if (hints.Count > GlobalVar.Channeling - 1)
                 {
-                    text += $"HINT-{GlobalVar.Channeling}\n";
                     text += hints[GlobalVar.Channeling - 1];
                 }
                 else

@@ -10,7 +10,7 @@ using PWBG_BOT.Core;
 using PWBG_BOT.Core.PlayerInventory;
 using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.UserAccounts;
-
+using PWBG_BOT.Core.BuffAndDebuff;
 #endregion
 
 namespace PWBG_BOT.Modules
@@ -230,14 +230,14 @@ namespace PWBG_BOT.Modules
             {
                 string act = (item.Active) ? "Active" : "Passive";
                 text += $"Item-{++i}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
-                if (item.Buffs != null) text += $"Buff : {item.Buffs.Name}\n";
-                if (item.Debuffs != null) text += $"Debuff : {item.Debuffs.Name}\n";
+                //if (item.Buffs != null) text += $"Buff : {item.Buffs.Name}\n";
+                //if (item.Debuffs != null) text += $"Debuff : {item.Debuffs.Name}\n";
                 text += "\n";
             }
             await Context.Channel.SendMessageAsync($"`{text}`");
         }
 
-        [Command("use item")]
+        [Command("use item", RunMode = RunMode.Async)]
         public async Task UsingItem(int index, IGuildUser taggedUser = null)
         {
             if (!GlobalVar.CanUseItem) return;
@@ -248,12 +248,12 @@ namespace PWBG_BOT.Modules
             GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
             if (taggedUser == null)
             {
-                text += Inventories.UseItem(Context.User, index, null, Context.Guild);
+                //text += Inventories.UseItem(Context.User, index, null);
             }
             else
             {
                 var user = UserAccounts.GetUserAccount((SocketUser)taggedUser);
-                text += Inventories.UseItem(Context.User, index, user, Context.Guild);
+                //text += Inventories.UseItem(Context.User, index, user);
             }
             if (text.Equals("success") && taggedUser != null)
             {
@@ -267,9 +267,9 @@ namespace PWBG_BOT.Modules
         }
 
         [Command("inv drop")]
-        public async Task DropItemFromInventory(int id)
+        public void DropItemFromInventory(int id)
         {
-            await Context.Channel.SendMessageAsync(Inventories.DropItem(Context.User, id));
+            Inventories.DropItem(Context.User,id);
         }
 
         #endregion
@@ -394,8 +394,8 @@ namespace PWBG_BOT.Modules
             {
                 string act = (t.Active) ? "Active":"Passive" ;
                 text += $"Item-{t.ID}\nName : {t.Name}\nActive : {act}\nType : {t.Type}\nRarity : {t.Rarity}\n";
-                if (t.Buffs != null) text += $"Buff : {t.Buffs.Name}\n";
-                if (t.Debuffs != null) text += $"Debuff : {t.Debuffs.Name}\n";
+                //if (t.Buffs != null) text += $"Buff : {t.Buffs.Name}\n";
+                //if (t.Debuffs != null) text += $"Debuff : {t.Debuffs.Name}\n";
                 text += "\n";
                 if ((text.Length + 300) > 2048)
                 {
@@ -423,8 +423,8 @@ namespace PWBG_BOT.Modules
             string text = "";
             string act = (select.Active) ? "Active" : "Passive";
             text += $"Item-{select.ID}\nName : {select.Name}\nActive : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
-            if (select.Buffs != null) text += $"Buff : {select.Buffs.Name}\n";
-            if (select.Debuffs != null) text += $"Debuff : {select.Debuffs.Name}\n";
+            //if (select.Buffs != null) text += $"Buff : {select.Buffs.Name}\n";
+            //if (select.Debuffs != null) text += $"Debuff : {select.Debuffs.Name}\n";
             text += $"Description : {select.Description}";
             await Context.Channel.SendMessageAsync($"`{text}`");
         }
@@ -448,11 +448,11 @@ namespace PWBG_BOT.Modules
         }
         
         [Command("add item")]
-        public async Task AddingItem(string name, string type, bool active, int value, string rarity, [Remainder]string description = "")
+        public async Task AddingItem(string name, string type, bool active, int value, string rarity,int countdown ,[Remainder]string description = "")
         {
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
                 && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
-            Item made = Drops.CreatingItem(name,type,active,value,rarity, description);
+            Item made = Drops.CreatingItem(name,type,active,value,rarity, countdown,description);
             if (made == null)
             {
                 await Context.Channel.SendMessageAsync("`Failed to Make Item`");
@@ -508,6 +508,33 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("`HINT HAS BEEN ADDED`");
         }
 
+        [Command("add buff")]
+        public async Task AddingBuffs(string name, int value, int countdown, [Remainder]string desc)
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            Buff buff = Buffs.CreatingBuff(name,desc,value,countdown);
+            if(buff == null)
+            {
+                await Context.Channel.SendMessageAsync("FAILED TO MAKE BUFF");
+                return;
+            }
+            await Context.Channel.SendMessageAsync("BUFF HAS BEEN MADE");
+        }
+
+        [Command("add debuff")]
+        public async Task AddingDebuffs(string name, int value, int countdown, [Remainder]string desc)
+        {
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            Debuff debuff = Debuffs.CreatingDebuff(name, desc, value, countdown);
+            if (debuff == null)
+            {
+                await Context.Channel.SendMessageAsync("FAILED TO MAKE DEBUFF");
+                return;
+            }
+            await Context.Channel.SendMessageAsync("DEBUFF HAS BEEN MADE");
+        }
 
         #endregion
 

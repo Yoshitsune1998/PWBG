@@ -9,6 +9,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
         public ulong ID { get; set; }
         public string Name { get; set; }
         public string Tech { get; set; }
-        public uint Value { get; set; }
+        public int Value { get; set; }
+        public int Countdown { get; set;}
     }
 }

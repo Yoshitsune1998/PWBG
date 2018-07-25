@@ -13,8 +13,9 @@ namespace PWBG_BOT.Core.Items
         public bool Active { get; set; }
         public int Value { get; set; }
         public string Rarity { get; set; }
-        public Buff Buffs { get; set; }
-        public Debuff Debuffs { get; set; }
+        public List<Buff> Buffs { get; set; }
+        public List<Debuff> Debuffs { get; set; }
         public string Description { get; set; }
+        public int Countdown { get; set; }
     }
 }
