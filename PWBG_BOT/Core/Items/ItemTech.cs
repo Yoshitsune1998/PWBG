@@ -11,6 +11,7 @@ namespace PWBG_BOT.Core.Items
     {
 
         private static bool tagProhibited = true;
+        public static bool haveReversal = false;
 
         public async static Task UseDecreasingHPItem(UserAccount me,Item item, UserAccount user)
         {
@@ -21,7 +22,17 @@ namespace PWBG_BOT.Core.Items
                 if (tagProhibited)
                 {
                     SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+                    if (haveReversal)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {item.Value} HP");
+                        haveReversal = false;
+                        return;
+                    }
+                    else
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+                    }
+                    
                 }
                 SocketUser realMe = GlobalVar.GuildSelect.GetUser(me.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realMe.Mention} GET 1 KILL");
@@ -30,7 +41,16 @@ namespace PWBG_BOT.Core.Items
             {
                 if (!tagProhibited) return;
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
-                await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!!");
+                if (haveReversal)
+                {
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {item.Value} HP");
+                    haveReversal = false;
+                    return;
+                }
+                else
+                {
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+                }
             }
         }
 
@@ -43,7 +63,16 @@ namespace PWBG_BOT.Core.Items
                 if (tagProhibited)
                 {
                     SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
+                    if (haveReversal)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {value} HP");
+                        haveReversal = false;
+                        return;
+                    }
+                    else
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
+                    }
                 }
                 SocketUser realMe = GlobalVar.GuildSelect.GetUser(me.ID);
                 await GlobalVar.ChannelSelect.SendMessageAsync($"{realMe.Mention} GET 1 KILL");
@@ -52,7 +81,16 @@ namespace PWBG_BOT.Core.Items
             {
                 if (!tagProhibited) return;
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
-                await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!!");
+                if (haveReversal)
+                {
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {value} HP");
+                    haveReversal = false;
+                    return;
+                }
+                else
+                {
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
+                }
             }
         }
 

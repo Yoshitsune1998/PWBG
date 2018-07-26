@@ -245,7 +245,11 @@ namespace PWBG_BOT.Modules
         public async Task UsingItem(int index, IGuildUser taggedUser = null, int optional = 0)
         {
             if (!GlobalVar.CanUseItem) return;
-            if (UserAccounts.CheckHaveThisBuff(UserAccounts.GetUserAccount(Context.User), "Panic")) return;
+            if (UserAccounts.CheckHaveThisDebuff(UserAccounts.GetUserAccount(Context.User), "Panic"))
+            {
+                await Context.Channel.SendMessageAsync($"Cant use item in panic {Context.User.Mention}");
+                return;
+            }
             if (UserAccounts.IsDead(Context.User)) return;
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Survivor")) return;
             GlobalVar.GuildSelect = Context.Guild;
@@ -259,7 +263,6 @@ namespace PWBG_BOT.Modules
             {
                 await Inventories.UseActiveItem(Context.User, index, null,optional);
             }
-            await Context.Channel.SendMessageAsync("");
         }
 
         [Command("inv show")]

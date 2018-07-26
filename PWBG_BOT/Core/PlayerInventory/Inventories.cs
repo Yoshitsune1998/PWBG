@@ -145,7 +145,8 @@ namespace PWBG_BOT.Core.SurvivorInventory
             Inventory inv = GetInventory(realUser);
             foreach (var i in inv.Items)
             {
-                if (i.Name.Equals("name")) return true;
+                Console.WriteLine($"{i.Name} and {name}");
+                if (i.Name.Equals(name)) return true;
             }
             return false;
         }

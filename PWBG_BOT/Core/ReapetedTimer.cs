@@ -108,7 +108,9 @@ namespace PWBG_BOT.Core
             {
                 UserAccounts.UserAccounts.StatusAilment(p);
                 var realuser = GlobalVar.QuizGuild.GetUser(p.ID);
+                await SurvivorInventory.Inventories.PassiveItem(realuser);
                 SurvivorInventory.Inventories.CountDownItem(realuser);
+
             }
             string text="";
             foreach (var u in users)

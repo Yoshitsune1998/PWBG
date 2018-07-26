@@ -78,6 +78,7 @@ namespace PWBG_BOT.Core.UserAccounts
             {
                 if (CheckHaveThisBuff(user, "Reversality"))
                 {
+                    ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
                     await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
@@ -94,6 +95,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 bool temp = false;
                 if (CheckHaveThisBuff(user, "Reversality"))
                 {
+                    ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
                     await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
@@ -104,23 +106,12 @@ namespace PWBG_BOT.Core.UserAccounts
                 Inventories.DropAnyItem(realuser, getto);
                 if (temp) return;
                 user.HP -= ammount;
-                if (user.HP < 0) user.HP = 0;
-            }
-            else if (user.HP - ammount < 0)
-            {
-                if (CheckHaveThisBuff(user, "Reversality"))
-                {
-                    IncreasingHealth(user, ammount);
-                    user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
-                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
-                    return;
-                }
-                user.HP = 0;
             }
             else
             {
                 if (CheckHaveThisBuff(user, "Reversality"))
                 {
+                    ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
                     await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
@@ -128,6 +119,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 }
                 user.HP -= ammount;
             }
+            if (user.HP < 0) user.HP = 0;
             SaveAccount();
         }
 
@@ -135,6 +127,16 @@ namespace PWBG_BOT.Core.UserAccounts
         {
             if (user.Buffs.Count <= 0) return false;
             foreach (var b in user.Buffs)
+            {
+                if (b.Name.Equals(name)) return true;
+            }
+            return false;
+        }
+
+        public static bool CheckHaveThisDebuff(UserAccount user, string name)
+        {
+            if (user.Debuffs.Count <= 0) return false;
+            foreach (var b in user.Debuffs)
             {
                 if (b.Name.Equals(name)) return true;
             }
