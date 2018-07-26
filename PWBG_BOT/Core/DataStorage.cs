@@ -4,7 +4,7 @@ using System.Text;
 using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Core.BuffAndDebuff;
 using PWBG_BOT.Core.Items;
-using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.SurvivorInventory;
 using PWBG_BOT.Core.System;
 using Newtonsoft.Json;
 using System.IO;

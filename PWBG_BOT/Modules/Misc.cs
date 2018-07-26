@@ -8,7 +8,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.System;
 using PWBG_BOT.Core;
-using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.SurvivorInventory;
 using PWBG_BOT.Core.Items;
 using PWBG_BOT.Core.UserAccounts;
 using PWBG_BOT.Core.BuffAndDebuff;
@@ -60,7 +60,7 @@ namespace PWBG_BOT.Modules
                 "\n\n-quiz number-quiz number-of-time[opsional, default = 60s] (for showing the quiz based on the number)" +
                 "\n\n-quiz cancel (for canceling quiz that has been started)" +
                 "\n\n-show quizzes (show all quiz with the hints and right answer)" +
-                "\n\n-show players (show all user with Player Role)" +
+                "\n\n-show Survivors (show all user with Survivor Role)" +
                 "\n\n-add quiz type(image / sv / ost / bonus / voice - sv) url(embedded location like imgur / etc) " +
                 "\nurl-fullimage (if nothing then type x)" +
                 "\ndiff(ez / med / hard / ext / imm) drop(item number) correctAnswer(the correct answer from your quiz) " +
@@ -80,13 +80,13 @@ namespace PWBG_BOT.Modules
         [Command("join")]
         public async Task JoiningBattle()
         {
-            if(IsHavingThisRole((SocketGuildUser)Context.User, "Player"))
+            if(IsHavingThisRole((SocketGuildUser)Context.User, "Survivor"))
             {
                 return;
             }
             else
             {
-                await ChangeRole((Context.User as SocketGuildUser), "Player");
+                await ChangeRole((Context.User as SocketGuildUser), "Survivor");
                 await Context.Channel.SendMessageAsync($"{Context.User.Mention} joined the battle");
             }
         }
@@ -94,11 +94,11 @@ namespace PWBG_BOT.Modules
         [Command("out")]
         public async Task OutFromBattle()
         {
-            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player"))
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Survivor"))
             {
                 return;
             }
-            await RemoveRole((Context.User as SocketGuildUser), "Player");
+            await RemoveRole((Context.User as SocketGuildUser), "Survivor");
             await Context.Channel.SendMessageAsync($"{Context.User.Mention} out from the battle");
         }
 
@@ -161,7 +161,8 @@ namespace PWBG_BOT.Modules
         public async Task StartQuiz(ulong id,ulong time=60)
         {
             if (GlobalVar.QuizHasBeenStarted) return;
-            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
+                && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
             Quiz now = Quizzes.GetQuiz(id);
             if (now == null)
             {
@@ -222,7 +223,7 @@ namespace PWBG_BOT.Modules
         public async Task Answering([Remainder]string answer)
         {
             if (!GlobalVar.QuizHasBeenStarted) return;
-            if (!IsHavingThisRole((SocketGuildUser)Context.User,"Player")) return;
+            if (!IsHavingThisRole((SocketGuildUser)Context.User,"Survivor")) return;
             if (UserAccounts.IsDead(Context.User)) return;
             UserAccount user = UserAccounts.GetUserAccount(Context.User);
             ulong id = GlobalVar.Selected.ID;
@@ -239,6 +240,27 @@ namespace PWBG_BOT.Modules
         #endregion
 
         #region "ITEM COMMANDS"
+        //
+        [Command("use item", RunMode = RunMode.Async)]
+        public async Task UsingItem(int index, IGuildUser taggedUser = null, int optional = 0)
+        {
+            if (!GlobalVar.CanUseItem) return;
+            if (UserAccounts.CheckHaveThisBuff(UserAccounts.GetUserAccount(Context.User), "Panic")) return;
+            if (UserAccounts.IsDead(Context.User)) return;
+            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Survivor")) return;
+            GlobalVar.GuildSelect = Context.Guild;
+            GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
+            if (taggedUser != null)
+            {
+                var target = UserAccounts.GetUserAccount((SocketUser)taggedUser);
+                await Inventories.UseActiveItem(Context.User, index, target, optional);
+            }
+            else
+            {
+                await Inventories.UseActiveItem(Context.User, index, null,optional);
+            }
+            await Context.Channel.SendMessageAsync("");
+        }
 
         [Command("inv show")]
         public async Task ShowInventory()
@@ -260,22 +282,10 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync($"`{text}`");
         }
 
-        [Command("use item", RunMode = RunMode.Async)]
-        public async void UsingItem(int index, IGuildUser taggedUser = null, int optional = 0)
-        {
-            if (!GlobalVar.CanUseItem) return;
-            if (UserAccounts.CheckHaveThisBuff(UserAccounts.GetUserAccount(Context.User), "Panic")) return;
-            if (UserAccounts.IsDead(Context.User)) return;
-            if (!IsHavingThisRole((SocketGuildUser)Context.User, "Player")) return;
-            GlobalVar.GuildSelect = Context.Guild;
-            GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
-            await Context.Channel.SendMessageAsync("");
-        }
-
         [Command("inv drop")]
-        public void DropItemFromInventory(int id)
+        public async Task DropItemFromInventory(int id)
         {
-            Inventories.DropItem(Context.User,id);
+            await Inventories.DropItem(Context.User,id);
         }
 
         #endregion
@@ -325,8 +335,8 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync($"{formattedText}");
         }
 
-        [Command("show players")]
-        public async Task ShowAllPlayers()
+        [Command("show Survivors")]
+        public async Task ShowAllSurvivors()
         {
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")
                 && !IsHavingThisRole((SocketGuildUser)Context.User, "Quiz Manager")) return;
@@ -335,7 +345,7 @@ namespace PWBG_BOT.Modules
             string text = "";
             foreach (var u in users)
             {
-                if (IsHavingThisRole(u,"Player"))
+                if (IsHavingThisRole(u,"Survivor"))
                 {
                     var user = UserAccounts.GetUserAccount((SocketUser)u);
                     text += $"{u.Username}\nHP : {user.HP}\n" +
@@ -608,7 +618,7 @@ namespace PWBG_BOT.Modules
 
         #region "GOD COMMANDS"
 
-        [Command("give me")]
+        [Command("give item")]
         public async Task GiveItem(ulong index, IGuildUser guildUser=null)
         {
             if (!IsHavingThisRole((SocketGuildUser)Context.User, "Developer")

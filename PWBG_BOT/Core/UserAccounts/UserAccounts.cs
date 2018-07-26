@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Discord.WebSocket;
 using System.Linq;
-using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.SurvivorInventory;
 using PWBG_BOT.Core.BuffAndDebuff;
 using PWBG_BOT.Core.Items;
 
@@ -209,12 +209,12 @@ namespace PWBG_BOT.Core.UserAccounts
             return newAccount;
         }
         
-        public static UserAccount GetRandomPlayer(SocketGuild guild)
+        public static UserAccount GetRandomSurvivor(SocketGuild guild)
         {
             var users = guild.Users;
-            List<UserAccount> randomPlayers = new List<UserAccount>();
+            List<UserAccount> randomSurvivors = new List<UserAccount>();
             var role = from r in guild.Roles
-                       where r.Name.Equals("Player")
+                       where r.Name.Equals("Survivor")
                        select r;
             var des = role.FirstOrDefault();
             foreach (var u in users)
@@ -223,14 +223,14 @@ namespace PWBG_BOT.Core.UserAccounts
                 {
                     var user = UserAccounts.GetUserAccount((SocketUser)u);
                     if (user.HP <= 0) continue;
-                    randomPlayers.Add(user);
+                    randomSurvivors.Add(user);
                 }
             }
             Random gacha = new Random();
-            if (randomPlayers.Count == 0) return null;
-            int luckyIndex = (int)gacha.Next(0,randomPlayers.Count);
+            if (randomSurvivors.Count == 0) return null;
+            int luckyIndex = (int)gacha.Next(0,randomSurvivors.Count);
             Console.WriteLine(luckyIndex);
-            return randomPlayers[luckyIndex];
+            return randomSurvivors[luckyIndex];
         }
 
         public static Buff GetRandomBuff(UserAccount target)
@@ -260,7 +260,7 @@ namespace PWBG_BOT.Core.UserAccounts
                 return null;
             }
             do
-            { target = GetRandomPlayer(GlobalVar.GuildSelect); }
+            { target = GetRandomSurvivor(GlobalVar.GuildSelect); }
             while (me == target);
             return target;
         }

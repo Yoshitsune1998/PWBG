@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using PWBG_BOT.Core.BuffAndDebuff;
-using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.SurvivorInventory;
 
 namespace PWBG_BOT.Core.UserAccounts
 {

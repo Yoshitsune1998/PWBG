@@ -74,6 +74,7 @@ namespace PWBG_BOT.Core
         public static async Task StrategyTime()
         {
             GlobalVar.CanUseItem = true;
+            Console.WriteLine(GlobalVar.CanUseItem);
             var loopTimer = new Timer()
             {
                 Interval = 30000,
@@ -94,7 +95,7 @@ namespace PWBG_BOT.Core
             int highscores = 0;
             List<SocketUser> winner = new List<SocketUser>();
             var role = from r in guild.Roles
-                       where r.Name.Equals("Player")
+                       where r.Name.Equals("Survivor")
                        select r;
             var des = role.FirstOrDefault();
             List<UserAccount> pacito = UserAccounts.UserAccounts.GetAllAliveUsers();
@@ -107,7 +108,7 @@ namespace PWBG_BOT.Core
             {
                 UserAccounts.UserAccounts.StatusAilment(p);
                 var realuser = GlobalVar.QuizGuild.GetUser(p.ID);
-                PlayerInventory.Inventories.CountDownItem(realuser);
+                SurvivorInventory.Inventories.CountDownItem(realuser);
             }
             string text="";
             foreach (var u in users)

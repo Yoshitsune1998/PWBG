@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PWBG_BOT.Core.Items;
-using PWBG_BOT.Core.PlayerInventory;
+using PWBG_BOT.Core.SurvivorInventory;
 using Discord.WebSocket;
 
 namespace PWBG_BOT.Core.System
