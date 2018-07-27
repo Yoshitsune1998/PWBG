@@ -120,7 +120,9 @@ namespace PWBG_BOT.Modules
             embed.AddField("Inventory : ", "Items List(1-3) : ");
             for (int i = 0; i < lenght; i++)
             {
-                embed.AddInlineField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
+                if (account.Inventory.Items[i].Countdown != -1) embed.AddInlineField($"Items-{i + 1} : ", account.Inventory.Items[i].Name 
+                    + $" ({account.Inventory.Items[i].Countdown})");
+                else embed.AddInlineField($"Items-{i+1} : ", account.Inventory.Items[i].Name);
                 temp++;
             }
             for (int i = temp; i < 3; i++)
@@ -131,7 +133,7 @@ namespace PWBG_BOT.Modules
             temp = 0;
             for (int i = 0; i < lenght; i++)
             {
-                embed.AddInlineField($"Buffs-{i + 1} : ", account.Buffs[i].Name);
+                embed.AddInlineField($"Buffs-{i + 1} : ", account.Buffs[i].Name + $" ({account.Buffs[i].Countdown})");
                 temp++;
             }
             for (int i = temp; i < 3; i++)
@@ -142,7 +144,7 @@ namespace PWBG_BOT.Modules
             temp = 0;
             for (int i = 0; i < lenght; i++)
             {
-                embed.AddInlineField($"Debuffs-{i + 1} : ", account.Debuffs[i].Name);
+                embed.AddInlineField($"Debuffs-{i + 1} : ", account.Debuffs[i].Name + $" ({account.Debuffs[i].Countdown})");
                 temp++;
             }
             for (int i = temp; i < 3; i++)
@@ -228,7 +230,6 @@ namespace PWBG_BOT.Modules
             UserAccount user = UserAccounts.GetUserAccount(Context.User);
             ulong id = GlobalVar.Selected.ID;
             int point = Quizzes.CheckAnswer(answer,id);
-            Console.WriteLine(point);
             if (point == 0)
             {
                 return;
@@ -280,6 +281,7 @@ namespace PWBG_BOT.Modules
             {
                 string act = (item.Active) ? "Active" : "Passive";
                 text += $"Item-{++i}\nName : {item.Name}\nActive : {act}\nType : {item.Type}\nRarity : {item.Rarity}\n";
+                if (item.Countdown != -1) text += $"Countdown : {item.Countdown}";
                 text += "\n";
             }
             await Context.Channel.SendMessageAsync($"`{text}`");
@@ -288,6 +290,8 @@ namespace PWBG_BOT.Modules
         [Command("inv drop")]
         public async Task DropItemFromInventory(int id)
         {
+            GlobalVar.GuildSelect = Context.Guild;
+            GlobalVar.ChannelSelect = (SocketTextChannel)Context.Channel;
             await Inventories.DropItem(Context.User,id);
         }
 
@@ -358,7 +362,9 @@ namespace PWBG_BOT.Modules
                     int num = 0;
                     for (int i = 0; i < user.Inventory.Items.Count; i++)
                     {
-                        text += $"Item-{i + 1}: {user.Inventory.Items[i].Name}\n";
+                        text += $"Item-{i + 1}: {user.Inventory.Items[i].Name}";
+                        if (user.Inventory.Items[i].Countdown != -1) text += $" ({user.Inventory.Items[i].Countdown})";
+                        text += "\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -371,7 +377,7 @@ namespace PWBG_BOT.Modules
                     num = 0;
                     for (int i = 0; i < user.Buffs.Count; i++)
                     {
-                        text += $"Buff-{i + 1}: {user.Buffs[i].Name}\n";
+                        text += $"Buff-{i + 1}: {user.Buffs[i].Name} ({user.Buffs[i].Countdown})\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -384,7 +390,7 @@ namespace PWBG_BOT.Modules
                     num = 0;
                     for (int i = 0; i < user.Debuffs.Count; i++)
                     {
-                        text += $"Debuff-{i + 1}: {user.Debuffs[i].Name}\n";
+                        text += $"Debuff-{i + 1}: {user.Debuffs[i].Name} ({user.Debuffs[i].Countdown})\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -432,7 +438,6 @@ namespace PWBG_BOT.Modules
         public async Task GetItem([Remainder]string name)
         {
             List<Item> find = Drops.WordFind(name);
-            Console.WriteLine(find.Count);
             if (find.Count <= 0)
             {
                 await Context.Channel.SendMessageAsync($"`NO ITEM FOUND WITH THAT NAME`");
@@ -443,6 +448,7 @@ namespace PWBG_BOT.Modules
                 string text = "";
                 string act = (select.Active) ? "Active" : "Passive";
                 text += $"Item-{select.ID}\nName : {select.Name}\nUsage : {act}\nType : {select.Type}\nRarity : {select.Rarity}\n";
+                if (select.Countdown != -1) text += $"Countdown : {select.Countdown}\n";
                 foreach (var item in select.Buffs)
                 {
                     text += $"Buff : {item.Name}, description : {item.Tech}\n";

@@ -5,6 +5,7 @@ using System.Linq;
 using PWBG_BOT.Core.SurvivorInventory;
 using PWBG_BOT.Core.BuffAndDebuff;
 using PWBG_BOT.Core.Items;
+using System.Threading.Tasks;
 
 namespace PWBG_BOT.Core.UserAccounts
 {
@@ -145,7 +146,7 @@ namespace PWBG_BOT.Core.UserAccounts
 
         public static UserAccount GetUserAccount(SocketUser user)
         {
-            return GetOrCreateAccount(user.Id);
+            return GetOrCreateAccount(user);
         }
         
         public static UserAccount GetUserAccountByID(ulong id)
@@ -184,17 +185,19 @@ namespace PWBG_BOT.Core.UserAccounts
             DataStorage.SaveUserAccounts(accounts, accountsFile);
         }
 
-        private static UserAccount GetOrCreateAccount(ulong id)
+        private static UserAccount GetOrCreateAccount(SocketUser user)
         {
+            ulong id = user.Id;
+            string name = user.Username;
             var result = from a in accounts
                          where a.ID == id
                          select a;
             var account = result.FirstOrDefault();
-            if (account == null) account = CreateUserAccount(id);
+            if (account == null) account = CreateUserAccount(id,name);
             return account;
         }
 
-        private static UserAccount CreateUserAccount(ulong id)
+        private static UserAccount CreateUserAccount(ulong id,string name)
         {
             var newAccount = new UserAccount()
             {
@@ -204,7 +207,8 @@ namespace PWBG_BOT.Core.UserAccounts
                 Debuffs = new List<Debuff>(),
                 HP = 15,
                 Inventory = Inventories.GetOrCreateInventory(id),
-                Kills = 0
+                Kills = 0,
+                Name = name
             };
             accounts.Add(newAccount);
             SaveAccount();
@@ -231,7 +235,6 @@ namespace PWBG_BOT.Core.UserAccounts
             Random gacha = new Random();
             if (randomSurvivors.Count == 0) return null;
             int luckyIndex = (int)gacha.Next(0,randomSurvivors.Count);
-            Console.WriteLine(luckyIndex);
             return randomSurvivors[luckyIndex];
         }
 
@@ -274,20 +277,32 @@ namespace PWBG_BOT.Core.UserAccounts
             return false;
         }
 
-        public static void StatusAilment(UserAccount user)
+        public static async Task StatusAilment(UserAccount user)
         {
-            if (user.Debuffs.Count<=0) return;
-            foreach (var d in user.Debuffs)
-            {
-                switch (d.Name)
+            if (user.Debuffs.Count > 0) {
+                for (int i = user.Debuffs.Count - 1; i >= 0; i--)
                 {
-                    case "Burn":
-                        StatusAilments.Burn(user, d);
-                        break;
-                    default:
-                        StatusAilments.DecreaseDebuffCountDown(user,d);
-                        break;
-                    //more status ailment later
+                    switch (user.Debuffs[i].Name)
+                    {
+                        case "Burn":
+                            await StatusAilments.Burn(user, user.Debuffs.ElementAt(i));
+                            break;
+                        default:
+                            await StatusAilments.DecreaseDebuffCountDown(user, user.Debuffs.ElementAt(i));
+                            break;
+                    }
+                }
+            }
+            if (user.Buffs.Count > 0)
+            {
+                for (int i = user.Buffs.Count - 1; i >= 0; i--)
+                {
+                    switch (user.Buffs[i].Name)
+                    {
+                        default:
+                            await StatusAilments.DecreaseBuffCountDown(user, user.Buffs.ElementAt(i));
+                            break;
+                    }
                 }
             }
         }

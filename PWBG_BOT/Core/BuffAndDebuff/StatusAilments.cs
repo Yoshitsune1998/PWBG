@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Discord.WebSocket;
-using PWBG_BOT.Core.UserAccounts;
+﻿using PWBG_BOT.Core.UserAccounts;
+using System.Threading.Tasks;
+using System;
 
 namespace PWBG_BOT.Core.BuffAndDebuff
 {
     class StatusAilments
     {
-        public static async void Burn(UserAccount user, Debuff burn)
+        public static async Task Burn(UserAccount user, Debuff burn)
         {
             UserAccounts.UserAccounts.DecreasingHealth(user,burn.Value);
             bool loss = false;
@@ -19,6 +17,7 @@ namespace PWBG_BOT.Core.BuffAndDebuff
                 if (u.Name.Equals("Burn"))
                 {
                     target = u;
+                    u.Countdown--;
                 }
             }
             if (target == null) return;
@@ -38,16 +37,40 @@ namespace PWBG_BOT.Core.BuffAndDebuff
             if (loss) await GlobalVar.ChannelSelect.SendMessageAsync($"{target.Name} HAS BEEN REMOVED");
         }
 
-        public static async void DecreaseDebuffCountDown(UserAccount user, Debuff debuff)
+        public static async Task DecreaseDebuffCountDown(UserAccount user, Debuff debuff)
         {
             foreach (var u in user.Debuffs)
             {
                 if (u == debuff)
                 {
+                    u.Countdown--;
                     if (u.Countdown == -1) return;
-                    user.Debuffs.Remove(debuff);
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{u.Name} HAS BEEN REMOVED");
+                    if (u.Countdown == 0)
+                    {
+                        user.Debuffs.Remove(debuff);
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{u.Name} HAS BEEN REMOVED");
+                    }
                     UserAccounts.UserAccounts.SaveAccount();
+                    return;
+                }
+            }
+        }
+
+        public static async Task DecreaseBuffCountDown(UserAccount user, Buff buff)
+        {
+            foreach (var u in user.Buffs)
+            {
+                if (u == buff)
+                {
+                    u.Countdown--;
+                    if (u.Countdown == -1) return;
+                    if (u.Countdown == 0)
+                    {
+                        user.Buffs.Remove(buff);
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{u.Name} HAS BEEN REMOVED");
+                    }
+                    UserAccounts.UserAccounts.SaveAccount();
+                    return;
                 }
             }
         }

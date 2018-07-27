@@ -23,6 +23,7 @@ namespace PWBG_BOT.Core
             channel = f;
             GlobalVar.QuizGuild = e;
 
+            await Task.Delay(5000);
             await StrategyTime();
             await Task.Delay(30000);
             //
@@ -74,7 +75,6 @@ namespace PWBG_BOT.Core
         public static async Task StrategyTime()
         {
             GlobalVar.CanUseItem = true;
-            Console.WriteLine(GlobalVar.CanUseItem);
             var loopTimer = new Timer()
             {
                 Interval = 30000,
@@ -106,11 +106,10 @@ namespace PWBG_BOT.Core
 
             foreach (var p in pacito)
             {
-                UserAccounts.UserAccounts.StatusAilment(p);
+                await UserAccounts.UserAccounts.StatusAilment(p);
                 var realuser = GlobalVar.QuizGuild.GetUser(p.ID);
                 await SurvivorInventory.Inventories.PassiveItem(realuser);
-                SurvivorInventory.Inventories.CountDownItem(realuser);
-
+                await SurvivorInventory.Inventories.CountDownItem(realuser);
             }
             string text="";
             foreach (var u in users)
@@ -127,7 +126,9 @@ namespace PWBG_BOT.Core
                     int num = 0;
                     for (int i = 0; i < user.Inventory.Items.Count; i++)
                     {
-                        text += $"Item-{i+1}: {user.Inventory.Items[i].Name}\n";
+                        text += $"Item-{i + 1}: {user.Inventory.Items[i].Name}";
+                        if (user.Inventory.Items[i].Countdown != -1) text += $" ({user.Inventory.Items[i].Countdown})";
+                        text += "\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -140,7 +141,7 @@ namespace PWBG_BOT.Core
                     num = 0;
                     for (int i = 0; i < user.Buffs.Count; i++)
                     {
-                        text += $"Buff-{i + 1}: {user.Buffs[i].Name}\n";
+                        text += $"Buff-{i + 1}: {user.Buffs[i].Name} ({user.Buffs[i].Countdown})\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -153,7 +154,7 @@ namespace PWBG_BOT.Core
                     num = 0;
                     for (int i = 0; i < user.Debuffs.Count; i++)
                     {
-                        text += $"Debuff-{i + 1}: {user.Debuffs[i].Name}\n";
+                        text += $"Debuff-{i + 1}: {user.Debuffs[i].Name} ({user.Debuffs[i].Countdown})\n";
                         num++;
                     }
                     for (int i = num; i < 3; i++)
@@ -163,8 +164,6 @@ namespace PWBG_BOT.Core
                     text += "\n\n";
                     if(user.TempPoint!=0)
                     {
-                        Console.WriteLine($"point : {user.TempPoint}");
-                        
                         if (winner.Count == 0)
                         {
                             highscores = user.TempPoint;
@@ -173,7 +172,6 @@ namespace PWBG_BOT.Core
                         else
                         {
                             var despacito = UserAccounts.UserAccounts.GetUserAccount(winner[winner.Count - 1]);
-                            Console.WriteLine($"temp-1 : {user.TempPoint} ; temp-2 : {highscores}");
                             if (user.TempPoint > highscores)
                             {
                                 highscores = user.TempPoint;

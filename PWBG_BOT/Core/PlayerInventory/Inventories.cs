@@ -42,19 +42,21 @@ namespace PWBG_BOT.Core.SurvivorInventory
             SaveInvent(user);
         }
 
-        public static void CountDownItem(SocketUser user)
+        public static async Task CountDownItem(SocketUser user)
         {
-            UserAccount acc = UserAccounts.UserAccounts.GetUserAccount(user);
-            foreach (var item in acc.Inventory.Items)
+            if (user == null) return;
+            Inventory inv = GetInventory(user);
+            for (int i = inv.Items.Count - 1; i >= 0; i--)
             {
-                if (item.Countdown == -1) continue;
-                item.Countdown--;
-                if (item.Countdown == 0)
+                if (inv.Items[i].Countdown == -1) continue;
+                inv.Items[i].Countdown--;
+                if (inv.Items[i].Countdown <= 0)
                 {
-                    DropAnyItem(user, item);
+                    Console.WriteLine($"{inv.Items[i].Name} countdown {inv.Items[i].Countdown}");
+                    await DropAnyItem(user, inv.Items[i]);
+                    SaveInvent();
                 }
             }
-            UserAccounts.UserAccounts.SaveAccount();
         }
 
         public static bool CheckFullInventory(SocketUser user)
@@ -110,16 +112,19 @@ namespace PWBG_BOT.Core.SurvivorInventory
         public static async Task DropItem(SocketUser user,int index)
         {
             Inventory select = GetInventory(user);
+            if (select == null) return;
             if (select.Items.Count < index || !select.Items[index - 1].Active)
             {
                 await GlobalVar.ChannelSelect.SendMessageAsync("`Can't Drop Item`");
+                return;
             }
-            select.Items.Remove(select.Items[index - 1]);
+            Item item = select.Items[index - 1];
+            select.Items.Remove(item);
             SaveInvent(user);
-            await GlobalVar.ChannelSelect.SendMessageAsync("`Item Dropped`");
+            await GlobalVar.ChannelSelect.SendMessageAsync($"`Item {item.Name} Dropped from` {user.Username} `inventory`");
         }
 
-        public static async void DropPassiveItem(SocketUser user, int index)
+        public static async Task DropPassiveItem(SocketUser user, int index)
         {
             Inventory select = GetInventory(user);
             if (select.Items.Count < index || !select.Items[index - 1].Type.Equals("Passive"))
@@ -131,12 +136,12 @@ namespace PWBG_BOT.Core.SurvivorInventory
             SaveInvent(user);
         }
 
-        public static async void DropAnyItem(SocketUser user, Item item)
+        public static async Task DropAnyItem(SocketUser user, Item item)
         {
             Inventory select = GetInventory(user);
             select.Items.Remove(item);
             SaveInvent(user);
-            await GlobalVar.ChannelSelect.SendMessageAsync("`Item Dropped`");
+            await GlobalVar.ChannelSelect.SendMessageAsync($"`Item {item.Name} Dropped from {user.Username} inventory`");
         }
 
         public static bool CheckHaveThisItem(UserAccount user, string name)
@@ -145,7 +150,6 @@ namespace PWBG_BOT.Core.SurvivorInventory
             Inventory inv = GetInventory(realUser);
             foreach (var i in inv.Items)
             {
-                Console.WriteLine($"{i.Name} and {name}");
                 if (i.Name.Equals(name)) return true;
             }
             return false;
@@ -174,10 +178,17 @@ namespace PWBG_BOT.Core.SurvivorInventory
         public static async Task UseActiveItem(SocketUser user, int index, UserAccount target = null,int optional = 0)
         {
             var select = GetInventory(user);
-            if (select.Items.Count < index) await GlobalVar.ChannelSelect.SendMessageAsync("No Item Selected");
+            if (select.Items.Count < index)
+            {
+                await GlobalVar.ChannelSelect.SendMessageAsync("No Item Selected");
+                return;
+            }
             var use = select.Items[index - 1];
             var me = UserAccounts.UserAccounts.GetUserAccount(user);
-            if (!use.Active) await GlobalVar.ChannelSelect.SendMessageAsync("Can't use passive item");
+            if (!use.Active) {
+                await GlobalVar.ChannelSelect.SendMessageAsync("Can't use passive item");
+                return;
+            } 
             List<UserAccount> despacito = new List<UserAccount>();
             #region List active items
             switch (use.Name)

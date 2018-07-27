@@ -70,7 +70,6 @@ namespace PWBG_BOT.Core.System
         private static bool CheckExistedAnswer(string word)
         {
             word = word.ToLower();
-            Console.WriteLine(word);
             if (usedWords.Contains(word))
             {
                 return true;
