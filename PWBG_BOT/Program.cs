@@ -2,7 +2,7 @@
 using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using PWBG_BOT.Core;
+using System.Text.RegularExpressions;
 
 namespace PWBG_BOT
 {

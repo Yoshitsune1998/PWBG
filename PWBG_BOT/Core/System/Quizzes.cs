@@ -49,30 +49,49 @@ namespace PWBG_BOT.Core.System
 
         private static int CorrectAnswer(string word, Quiz quiz)
         {
-            usedWords.Add(word);
             string[] words = word.Split();
             int correctWord = 0;
             string[] corrections = quiz.RightAnswer.Split();
+            string temp = "";
             foreach (var w in words)
             {
+                string a = w.ToLower();
                 foreach (var c in corrections)
                 {
-                    if (w.ToLower().Equals(c.ToLower()))
+                    string b = c.ToLower();
+                    if (a.Equals(b))
                     {
-                        usedWords.Add(w.ToLower());
+                        temp += $"{a} ";
                         correctWord++;
+                        if (usedWords.Contains(a)) continue;
+                        usedWords.Add(a);
                     }
                 }
             }
+            if (usedWords.Contains(temp)) return 0;
+            usedWords.Add($"{temp}\b");
             return correctWord;
         }
 
-        private static bool CheckExistedAnswer(string word)
+        private static bool CheckExistingAnswer(string word)
         {
             word = word.ToLower();
-            if (usedWords.Contains(word))
+            var xword = word.Split();
+            int xw = xword.Length;
+            foreach (var used in usedWords)
             {
-                return true;
+                int sametbh = 0;
+                string temp = used.ToLower();
+                var xtemp = temp.Split();
+                int xt = xtemp.Length;
+                foreach (var t in xtemp)
+                {
+                    foreach (var w in xword)
+                    {
+                        if (t.Equals(w)) sametbh++;
+                    }
+                }
+                if (sametbh == xt) return true;
             }
             return false;
         }
@@ -95,7 +114,8 @@ namespace PWBG_BOT.Core.System
             {
                 return 0;
             }
-            if (CheckExistedAnswer(word))
+            if (string.IsNullOrWhiteSpace(word)) return 0;
+            if (CheckExistingAnswer(word))
             {
                 return 0;
             }

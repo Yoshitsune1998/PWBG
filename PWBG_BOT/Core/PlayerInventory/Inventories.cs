@@ -168,8 +168,6 @@ namespace PWBG_BOT.Core.SurvivorInventory
                         case "Armlet Of Greed":
                             await ItemTech.ArmletOfGreed(acc, item);
                             break;
-                        default:
-                            break;
                     }
                 }
             }
@@ -360,10 +358,21 @@ namespace PWBG_BOT.Core.SurvivorInventory
                     despacito = alive;
                     break;
                 case "Mini Catapult":
-                    if (select.Items.Count < optional) return;
-                    Item drop = select.Items[optional - 1];
-                    if (drop == use) return;
-                    DropAnyItem(user,drop);
+                    SocketUser realtarget = GlobalVar.GuildSelect.GetUser(target.ID);
+                    if (realtarget == null) return;
+                    var select2 = GetInventory(realtarget);
+                    if (select2.Items.Count < optional)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("Target doesnt have that item");
+                        return;
+                    }
+                    Item drop = select2.Items[optional - 1];
+                    if (drop == use)
+                    {
+                        await GlobalVar.ChannelSelect.SendMessageAsync("Target doesnt have that item");
+                        return;
+                    }
+                    await DropAnyItem(realtarget,drop);
                     break;
                 case "Napalm Flare":
                     if (target == null)

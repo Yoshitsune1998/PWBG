@@ -221,7 +221,7 @@ namespace PWBG_BOT.Modules
             await Context.Channel.SendMessageAsync("`Quiz Has Been Canceled`");
         }
 
-        [Command("q")]
+        [Command("q", RunMode = RunMode.Async)]
         public async Task Answering([Remainder]string answer)
         {
             if (!GlobalVar.QuizHasBeenStarted) return;
