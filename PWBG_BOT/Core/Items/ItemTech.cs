@@ -12,9 +12,11 @@ namespace PWBG_BOT.Core.Items
 
         private static bool tagProhibited = true;
         public static bool haveReversal = false;
+        public static int damageOutcoume = 0;
 
         public async static Task UseDecreasingHPItem(UserAccount me,Item item, UserAccount user)
         {
+            damageOutcoume = item.Value;
             UserAccounts.UserAccounts.DecreasingHealth(user, item.Value);
             if (user.HP <= 0)
             {
@@ -24,13 +26,13 @@ namespace PWBG_BOT.Core.Items
                     SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                     if (haveReversal)
                     {
-                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {item.Value} HP");
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {damageOutcoume} HP");
                         haveReversal = false;
                         return;
                     }
                     else
                     {
-                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {damageOutcoume} DAMAGE!! \nYOU ARE DEAD!!");
                     }
                     
                 }
@@ -43,19 +45,20 @@ namespace PWBG_BOT.Core.Items
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 if (haveReversal)
                 {
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {item.Value} HP");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {damageOutcoume} HP");
                     haveReversal = false;
                     return;
                 }
                 else
                 {
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {item.Value} DAMAGE!! \nYOU ARE DEAD!!");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {damageOutcoume} DAMAGE!!");
                 }
             }
         }
 
         public async static Task UseDecreasingHPItem(UserAccount me, int value, UserAccount user)
         {
+            damageOutcoume = value;
             UserAccounts.UserAccounts.DecreasingHealth(user, value);
             if (user.HP <= 0)
             {
@@ -65,13 +68,13 @@ namespace PWBG_BOT.Core.Items
                     SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                     if (haveReversal)
                     {
-                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {value} HP");
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {damageOutcoume} HP");
                         haveReversal = false;
                         return;
                     }
                     else
                     {
-                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
+                        await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {damageOutcoume} DAMAGE!! \nYOU ARE DEAD!!");
                     }
                 }
                 SocketUser realMe = GlobalVar.GuildSelect.GetUser(me.ID);
@@ -83,13 +86,13 @@ namespace PWBG_BOT.Core.Items
                 SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
                 if (haveReversal)
                 {
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {value} HP");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} BEEN HEALED BY {damageOutcoume} HP");
                     haveReversal = false;
                     return;
                 }
                 else
                 {
-                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {value} DAMAGE!! \nYOU ARE DEAD!!");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} GET {damageOutcoume} DAMAGE!!");
                 }
             }
         }

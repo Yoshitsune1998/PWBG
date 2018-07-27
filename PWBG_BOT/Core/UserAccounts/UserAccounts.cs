@@ -82,29 +82,31 @@ namespace PWBG_BOT.Core.UserAccounts
                     ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
-                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{user.Name} REVERSALITY BUFF HAS BEEN REMOVED");
                     return;
                 }
                 user.HP = 1;
                 Item getto = Drops.GetSpecificItem("Chainmail");
                 SocketUser realuser = GlobalVar.GuildSelect.GetUser(user.ID);
-                Inventories.DropAnyItem(realuser, getto);
+                await Inventories.DropAnyItem(realuser, getto);
             }
             else if (Inventories.CheckHaveThisItem(user, "Bulletproof Vest"))
             {
+                Console.WriteLine("masuk");
                 ammount = (ammount / 2) + 1;
+                ItemTech.damageOutcoume = ammount;
                 bool temp = false;
                 if (CheckHaveThisBuff(user, "Reversality"))
                 {
                     ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
-                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{user.Name} REVERSALITY BUFF HAS BEEN REMOVED");
                     temp = !temp;
                 }
                 Item getto = Drops.GetSpecificItem("Bulletproof Vest");
                 SocketUser realuser = GlobalVar.GuildSelect.GetUser(user.ID);
-                Inventories.DropAnyItem(realuser, getto);
+                await Inventories.DropAnyItem(realuser, getto);
                 if (temp) return;
                 user.HP -= ammount;
             }
@@ -115,7 +117,7 @@ namespace PWBG_BOT.Core.UserAccounts
                     ItemTech.haveReversal = true;
                     IncreasingHealth(user, ammount);
                     user.Buffs.Remove(Buffs.GetSpecificBuff("Reversality"));
-                    await GlobalVar.ChannelSelect.SendMessageAsync("YOUR REVERSALITY BUFF HAS BEEN REMOVED");
+                    await GlobalVar.ChannelSelect.SendMessageAsync($"{user.Name} REVERSALITY BUFF HAS BEEN REMOVED");
                     return;
                 }
                 user.HP -= ammount;
