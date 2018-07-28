@@ -161,18 +161,43 @@ namespace PWBG_BOT.Core.UserAccounts
             return account;
         }
         
-        public static List<UserAccount> GetAllUsers()
+        public static List<UserAccount> GetAllSurvivors()
         {
-            return accounts;
+            List<UserAccount> acc = new List<UserAccount>();
+            var users = GlobalVar.QuizGuild.Users;
+            var guild = GlobalVar.QuizGuild;
+            var role = from r in guild.Roles
+                       where r.Name.Equals("Survivor")
+                       select r;
+            var des = role.FirstOrDefault();
+            foreach (var u in users)
+            {
+                if (u.Roles.Contains(des))
+                {
+                    var user = UserAccounts.GetUserAccount((SocketUser)u);
+                    acc.Add(user);
+                }
+            }
+            return acc;
         }
 
         public static List<UserAccount> GetAllAliveUsers()
         {
             List<UserAccount> alive = new List<UserAccount>();
-            foreach (var a in accounts)
+            var users = GlobalVar.QuizGuild.Users;
+            var guild = GlobalVar.QuizGuild;
+            var role = from r in guild.Roles
+                       where r.Name.Equals("Survivor")
+                       select r;
+            var des = role.FirstOrDefault();
+            foreach (var u in users)
             {
-                if (a.HP <= 0) continue;
-                alive.Add(a);
+                if (u.Roles.Contains(des))
+                {
+                    var user = UserAccounts.GetUserAccount((SocketUser)u);
+                    if (user.HP <= 0) continue;
+                    alive.Add(user);
+                }
             }
             return alive;
         }

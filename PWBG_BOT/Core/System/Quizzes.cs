@@ -75,6 +75,7 @@ namespace PWBG_BOT.Core.System
 
         private static bool CheckExistingAnswer(string word)
         {
+            //misal jawab hataraku saibou // di simpan udah ada saibou platelet
             word = word.ToLower();
             var xword = word.Split();
             int xw = xword.Length;
@@ -91,7 +92,7 @@ namespace PWBG_BOT.Core.System
                         if (t.Equals(w)) sametbh++;
                     }
                 }
-                if (sametbh == xt) return true;
+                if (sametbh == xw) return true;
             }
             return false;
         }
