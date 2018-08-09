@@ -31,8 +31,8 @@ namespace PWBG_BOT.Modules
             string x = "-join (for joining the quiz)\n\n-out (for going out from the quiz)" +
                 "\n\n-stats (for showing your stats)\n\n-q + text (for answering the quiz)" +
                 "\n\n-inv show (for showing your inventory more detail then -stats)" +
-                "\n\n-use item [1-3] (use item from inventory based on which number you select)" +
-                "\n\n-inv drop [1-3] (drop item from inventory based on which number you select)" +
+                "\n\n-use item [1-3] (use item from inventory based on which number you select) (@anyone)for targeted item (number) opsional" +
+                "\n\n-inv drop [1-3] (drop item from inventory based on which number you select) [cant drop passive item]" +
                 "\n\n-show items (for showing all items)" +
                 "\n\n-find item name (find with that name)";
 

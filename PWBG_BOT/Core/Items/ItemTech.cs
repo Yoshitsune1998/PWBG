@@ -148,7 +148,7 @@ namespace PWBG_BOT.Core.Items
 
         public async static Task UseDecreasingPointItem(Item item, UserAccount user)
         {
-            UserAccounts.UserAccounts.AddingPoints(user, item.Value);
+            UserAccounts.UserAccounts.DecreasingPoints(user, item.Value);
             SocketUser realUser = GlobalVar.GuildSelect.GetUser(user.ID);
             await GlobalVar.ChannelSelect.SendMessageAsync($"{realUser.Mention} YOUR POINTS HAVE BEEN DECREASED BY {item.Value}");
         }
